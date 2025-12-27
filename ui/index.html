@@ -2,604 +2,1612 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>awshound Viewer</title>
-  <style>
-    :root { --header-h: 56px; }
-    html, body { height: 100%; }
-    body { font-family: 'Inter', sans-serif; margin: 0; background: #0f121a; color: #e6e8ef; transition: background 0.2s, color 0.2s; overflow: hidden; }
-    header { height: var(--header-h); padding: 12px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; background: #0f121a; color: #f2f2f2; }
-    header .brand { font-weight: 700; letter-spacing: 0.5px; }
-    header .status { font-size: 0.9rem; display: flex; gap: 12px; align-items: center; }
-    header .status .pill { padding: 4px 8px; border-radius: 999px; background: #1e7cf2; color: #fff; font-size: 0.8rem; transition: background 0.2s, color 0.2s; }
-    .layout { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - var(--header-h)); }
-    nav { background: #111625; color: #e6e8ef; padding: 16px; display: flex; flex-direction: column; gap: 12px; height: calc(100vh - var(--header-h)); overflow-y: auto; box-sizing: border-box; transition: background 0.2s, color 0.2s; }
-    nav h3 { margin: 8px 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: #9aa6c4; }
-    nav .section { background: #151b2c; border: 1px solid #1f2a3d; border-radius: 8px; padding: 12px; transition: background 0.2s, border 0.2s; }
-    nav label, nav input, nav select, nav button { font-size: 0.9rem; }
-    .main { padding: 20px; background: #0f121a; color: #e6e8ef; height: calc(100vh - var(--header-h)); overflow-y: auto; box-sizing: border-box; }
-    .drop { border: 2px dashed #444; padding: 1rem; margin-bottom: 1rem; background: #fff; }
-    pre { background: #111; color: #eee; padding: 0.5rem; overflow: auto; }
-    .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; transition: background 0.2s, color 0.2s, border 0.2s; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 4px 6px; border-bottom: 1px solid #eee; font-size: 0.9rem; text-align: left; }
-    .pill { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #fff; }
-    .high { background: #c0392b; }
-    .medium { background: #f39c12; color: #111; }
-    .low { background: #27ae60; }
-    #cy { width: 100%; height: 500px; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
-    .controls { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    input[type="search"] { padding: 6px; }
-    #legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
-    .legend-swatch { width: 16px; height: 16px; border-radius: 3px; display: inline-block; }
-    #detail { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 0.75rem; margin-top: 1rem; font-size: 0.9rem; }
-    #detail pre { background: #f4f4f4; color: #222; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudHound - AWS Security Graph Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  <style>
+    :root {
+      /* Core palette */
+      --bg-primary: #0a0d12;
+      --bg-secondary: #0f1419;
+      --bg-tertiary: #151c24;
+      --bg-elevated: #1a232e;
+      --bg-hover: #1f2937;
+
+      /* Borders */
+      --border-subtle: #1f2937;
+      --border-default: #2d3748;
+      --border-strong: #4a5568;
+
+      /* Text */
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-tertiary: #64748b;
+      --text-muted: #475569;
+
+      /* Accent colors */
+      --accent-primary: #3b82f6;
+      --accent-primary-hover: #2563eb;
+      --accent-secondary: #8b5cf6;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-danger: #ef4444;
+      --accent-info: #06b6d4;
+
+      /* Severity */
+      --severity-critical: #dc2626;
+      --severity-high: #ef4444;
+      --severity-medium: #f59e0b;
+      --severity-low: #10b981;
+      --severity-info: #3b82f6;
+
+      /* Node colors */
+      --node-account: #6366f1;
+      --node-role: #8b5cf6;
+      --node-user: #10b981;
+      --node-s3: #f59e0b;
+      --node-ec2: #ec4899;
+      --node-lambda: #f97316;
+      --node-kms: #ef4444;
+      --node-sg: #06b6d4;
+      --node-default: #3b82f6;
+
+      /* Sizing */
+      --header-height: 56px;
+      --sidebar-width: 280px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+      --shadow-glow: 0 0 20px rgb(59 130 246 / 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      height: var(--header-height);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .brand-text {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-text span {
+      color: var(--accent-primary);
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .status-badge.ok {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--accent-success);
+    }
+
+    .status-badge.error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--accent-danger);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .theme-toggle {
+      padding: 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-default);
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      height: calc(100vh - var(--header-height));
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .sidebar-section:last-child {
+      border-bottom: none;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-tertiary);
+    }
+
+    /* Form elements */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.15s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-textarea {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-default);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    /* Main content */
+    .main {
+      background: var(--bg-primary);
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      background: var(--bg-secondary);
+      padding: 4px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .tab {
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .tab.active {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .card-body.no-padding {
+      padding: 0;
+    }
+
+    /* Graph container */
+    #cy {
+      width: 100%;
+      height: 500px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+    }
+
+    .graph-resizer {
+      height: 8px;
+      margin-top: 8px;
+      cursor: ns-resize;
+      background: var(--bg-hover);
+      border-radius: var(--radius-sm);
+      transition: background 0.15s ease;
+    }
+
+    .graph-resizer:hover {
+      background: var(--accent-primary);
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    th {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-tertiary);
+      background: var(--bg-tertiary);
+    }
+
+    tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    td {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Severity badges */
+    .severity {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-md);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .severity.critical {
+      background: rgba(220, 38, 38, 0.15);
+      color: var(--severity-critical);
+    }
+
+    .severity.high {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--severity-high);
+    }
+
+    .severity.medium {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--severity-medium);
+    }
+
+    .severity.low {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--severity-low);
+    }
+
+    .severity.info {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--severity-info);
+    }
+
+    /* Code */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      color: var(--accent-info);
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      overflow-x: auto;
+      color: var(--text-secondary);
+    }
+
+    /* Details panel */
+    .detail-panel {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .detail-empty {
+      text-align: center;
+      color: var(--text-tertiary);
+      padding: 32px;
+    }
+
+    .detail-empty svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    /* Environment stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-tertiary);
+    }
+
+    /* Environment list */
+    .env-list {
+      list-style: none;
+    }
+
+    .env-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.15s ease;
+    }
+
+    .env-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .env-item:last-child {
+      border-bottom: none;
+    }
+
+    .env-type {
+      font-weight: 600;
+      color: var(--accent-primary);
+      min-width: 120px;
+    }
+
+    .env-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      word-break: break-all;
+    }
+
+    /* Data management */
+    .upload-zone {
+      border: 2px dashed var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      text-align: center;
+      background: var(--bg-tertiary);
+      transition: all 0.15s ease;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent-primary);
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      color: var(--text-tertiary);
+    }
+
+    .upload-text {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .upload-files {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    /* Message */
+    .message {
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-danger);
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-success);
+    }
+
+    /* Cypher status */
+    .cypher-status {
+      font-size: 12px;
+      margin-top: 8px;
+      color: var(--text-tertiary);
+    }
+
+    .cypher-status.success {
+      color: var(--accent-success);
+    }
+
+    .cypher-status.error {
+      color: var(--accent-danger);
+    }
+
+    /* Arrow in table */
+    .arrow {
+      color: var(--text-tertiary);
+      margin: 0 4px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-tertiary);
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-strong);
+    }
+
+    /* Light theme */
+    body.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-elevated: #ffffff;
+      --bg-hover: #e2e8f0;
+      --border-subtle: #e2e8f0;
+      --border-default: #cbd5e1;
+      --border-strong: #94a3b8;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --text-muted: #94a3b8;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Fullscreen graph */
+    .graph-fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      z-index: 1000 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    .graph-fullscreen #cy {
+      height: calc(100vh - 120px) !important;
+      border-radius: 0 !important;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <div class="brand">AWSHound</div>
-    <div class="status">
-      <div class="pill" id="apiStatus">API: Unknown</div>
-      <div class="pill" id="neo4jStatus">Neo4j: Unknown</div>
-      <button id="themeToggle" style="padding:6px 10px; border-radius:6px; border:none; background:#2d8cff; color:#fff; cursor:pointer;">Toggle Theme</button>
+    <div class="brand">
+      <div class="brand-logo">CH</div>
+      <div class="brand-text">Cloud<span>Hound</span></div>
+    </div>
+    <div class="header-status">
+      <div class="status-badge" id="apiStatus">
+        <span class="status-dot"></span>
+        <span>API: Checking...</span>
+      </div>
+      <div class="status-badge" id="neo4jStatus">
+        <span class="status-dot"></span>
+        <span>Neo4j: Unknown</span>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
     </div>
   </header>
+
   <div class="layout">
-    <nav id="sidebar">
-      <div class="toggle" id="sidebarToggle">☰</div>
-      <div class="section">
-        <h3>Filters</h3>
-        <label>Severity<br>
-          <select id="severityFilter" style="width:100%;">
-            <option value="">All</option>
+    <nav class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-header">
+          <span class="section-title">Filters</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Severity</label>
+          <select class="form-select" id="severityFilter">
+            <option value="">All Severities</option>
+            <option value="critical">Critical</option>
             <option value="high">High</option>
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
-        </label>
-        <label>Search ID<br><input type="search" id="searchInput" placeholder="principal or resource id" style="width:100%;"></label>
-        <label>Node type filter<br><input type="search" id="typeFilter" placeholder="Role, User, S3Bucket" style="width:100%;"></label>
-        <button id="filterBtn" style="margin-top:8px; width:100%;">Apply Filters</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Search</label>
+          <input type="search" class="form-input" id="searchInput" placeholder="Search by ARN or ID...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Node Type</label>
+          <input type="search" class="form-input" id="typeFilter" placeholder="Role, User, S3Bucket...">
+        </div>
+        <button class="btn btn-primary btn-block" id="filterBtn">Apply Filters</button>
       </div>
-      <div class="section">
-        <h3>Cypher</h3>
-        <textarea id="cypherInput" style="width:100%; min-height:100px; background:#0f121a; color:#e6e8ef; border:1px solid #2d3748;" placeholder="MATCH (n) RETURN n LIMIT 25"></textarea>
-        <button id="runCypherBtn" style="margin-top:8px; width:100%;">Run Query</button>
-        <div id="cypherStatus" style="font-size:0.85rem; margin-top:4px; color:#9aa6c4;"></div>
+
+      <div class="sidebar-section">
+        <div class="section-header">
+          <span class="section-title">Cypher Query</span>
+        </div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="cypherInput" placeholder="MATCH (n) RETURN n LIMIT 25"></textarea>
+        </div>
+        <button class="btn btn-secondary btn-block" id="runCypherBtn">Run Query</button>
+        <div class="cypher-status" id="cypherStatus"></div>
       </div>
     </nav>
+
     <main class="main">
-      <div class="tabs" style="display:flex; gap:8px; margin-bottom:12px;">
-        <button class="tab-btn" data-tab="graph" style="padding:8px 12px; border:none; border-radius:6px; background:#2d8cff; color:#fff; cursor:pointer;">Graph</button>
-        <button class="tab-btn" data-tab="env" style="padding:8px 12px; border:none; border-radius:6px; background:#1f2733; color:#e6e8ef; cursor:pointer;">Environment</button>
-        <button class="tab-btn" data-tab="data" style="padding:8px 12px; border:none; border-radius:6px; background:#1f2733; color:#e6e8ef; cursor:pointer;">Data Management</button>
-        <button class="tab-btn" data-tab="settings" style="padding:8px 12px; border:none; border-radius:6px; background:#1f2733; color:#e6e8ef; cursor:pointer;">Settings</button>
+      <div class="tabs">
+        <button class="tab active" data-tab="graph">Graph</button>
+        <button class="tab" data-tab="env">Environment</button>
+        <button class="tab" data-tab="data">Data</button>
+        <button class="tab" data-tab="settings">Settings</button>
       </div>
-      <div id="msg" style="color:#c0392b; margin-bottom:1rem;"></div>
+
+      <div id="msg" class="message error hidden"></div>
+
+      <!-- Graph Tab -->
       <div id="tab-graph">
-        <div id="legend">
-          <div class="legend-item"><span class="legend-swatch" style="background:#4A90E2"></span>Node</div>
-          <div class="legend-item"><span class="legend-swatch" style="background:#ccc"></span>Edge</div>
-          <div class="legend-item"><span class="legend-swatch" style="background:#c0392b"></span>AttackPath</div>
-        </div>
-        <div class="card">
-          <div style="display:flex; justify-content: space-between; align-items:center;">
-            <h3>Graph View (Org/Trust/Attack Paths)</h3>
-            <div>
-              <button id="fullscreenBtn" style="padding:6px 10px; border:none; border-radius:6px; background:#2d8cff; color:#fff; cursor:pointer;">Fullscreen</button>
+        <div class="card" id="graphCard">
+          <div class="card-header">
+            <span class="card-title">Attack Path Graph</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary btn-sm" id="resetLayoutBtn">Reset Layout</button>
+              <button class="btn btn-secondary btn-sm" id="fullscreenBtn">Fullscreen</button>
             </div>
           </div>
-          <div id="cy" style="position:relative;"></div>
-          <div id="graphResizer" style="height:8px; cursor:ns-resize; background:#1f2a3d; border-radius:4px; margin-top:6px;"></div>
-        </div>
-        <div class="card">
-          <h3>Attack Paths</h3>
-          <table id="attacksTable">
-            <thead><tr><th>Rule</th><th>Description</th><th>Severity</th><th>Src → Dst</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div id="detail" class="card">
-          <h3>Selection Details</h3>
-          <div id="detailContent">Click a node or edge to view details.</div>
-        </div>
-        <div id="cypherResults" class="card">
-          <h3>Cypher Results</h3>
-          <pre id="cypherOutput" style="max-height:200px; overflow:auto; background:#0f121a; color:#e6e8ef;"></pre>
-        </div>
-      </div>
-      <div id="tab-env" style="display:none;">
-        <div class="card">
-          <details open>
-            <summary style="cursor:pointer; font-weight:600;">Environment Object Details</summary>
-            <div id="envDetails" style="margin-top:8px;"></div>
-          </details>
-        </div>
-        <div class="card">
-          <h3>Environment Summary</h3>
-          <div id="envSummary">No data</div>
-        </div>
-      </div>
-      <div id="tab-data" style="display:none;">
-        <div class="card">
-          <h3>Data Management</h3>
-          <div class="drop">
-            <label>Nodes file:<br><input type="file" id="nodesFile" accept=".jsonl"></label><br>
-            <label>Edges file:<br><input type="file" id="edgesFile" accept=".jsonl"></label><br>
-            <button id="loadBtn" style="margin-top:8px;">Load Files</button>
-          </div>
-          <div style="margin-top:10px;">
-            <button id="fetchApiBtn" style="margin-top:8px;">Fetch from API</button>
-          </div>
-          <div style="margin-top:10px;">
-            <button id="downloadReportBtn" style="margin-top:8px;">Download Report</button>
+          <div class="card-body">
+            <div class="legend">
+              <div class="legend-item"><span class="legend-swatch" style="background: var(--node-account)"></span>Account</div>
+              <div class="legend-item"><span class="legend-swatch" style="background: var(--node-role)"></span>Role</div>
+              <div class="legend-item"><span class="legend-swatch" style="background: var(--node-user)"></span>User</div>
+              <div class="legend-item"><span class="legend-swatch" style="background: var(--node-s3)"></span>S3</div>
+              <div class="legend-item"><span class="legend-swatch" style="background: var(--node-ec2)"></span>EC2</div>
+              <div class="legend-item"><span class="legend-swatch" style="background: var(--severity-high)"></span>Attack Path</div>
+            </div>
+            <div id="cy"></div>
+            <div class="graph-resizer" id="graphResizer"></div>
           </div>
         </div>
-      </div>
-      <div id="tab-settings" style="display:none;">
+
         <div class="card">
-          <h3>Settings</h3>
-          <label>API base:<br><input type="text" id="apiBase" value="http://127.0.0.1:5000" size="27"></label><br>
-          <label>Layout<br>
-            <select id="layoutSelect" style="width:100%;">
-              <option value="cose">COSE</option>
-              <option value="breadthfirst">Breadthfirst</option>
-              <option value="concentric">Concentric</option>
-            </select>
-          </label>
-          <label>Node label position<br>
-            <select id="labelPos" style="width:100%;">
-              <option value="center">Center</option>
-              <option value="top">Above</option>
-              <option value="bottom">Below</option>
-              <option value="left">Left</option>
-              <option value="right">Right</option>
-            </select>
-          </label>
-          <label>Theme<br>
-            <select id="theme" style="width:100%;">
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
-            </select>
-          </label>
+          <div class="card-header">
+            <span class="card-title">Attack Paths</span>
+            <span style="font-size: 12px; color: var(--text-tertiary);" id="attackCount">0 findings</span>
+          </div>
+          <div class="card-body no-padding">
+            <div class="table-wrapper">
+              <table id="attacksTable">
+                <thead>
+                  <tr>
+                    <th>Rule</th>
+                    <th>Description</th>
+                    <th>Severity</th>
+                    <th>Source / Target</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Selection Details</span>
+          </div>
+          <div class="card-body">
+            <div class="detail-panel" id="detailContent">
+              <div class="detail-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4M12 8h.01"></path>
+                </svg>
+                <p>Click a node or edge in the graph to view details</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Cypher Results</span>
+          </div>
+          <div class="card-body">
+            <pre id="cypherOutput">// Query results will appear here</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Environment Tab -->
+      <div id="tab-env" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Resource Overview</span>
+          </div>
+          <div class="card-body">
+            <div class="stats-grid" id="statsGrid">
+              <div class="empty-state">
+                <p>Load data to see resource statistics</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Environment Objects</span>
+            <span style="font-size: 12px; color: var(--text-tertiary);" id="objectCount">0 objects</span>
+          </div>
+          <div class="card-body no-padding">
+            <ul class="env-list" id="envList">
+              <li class="empty-state">
+                <p>No environment data loaded</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Tab -->
+      <div id="tab-data" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Data Management</span>
+          </div>
+          <div class="card-body">
+            <div class="upload-zone">
+              <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p class="upload-text">Upload CloudHound data files to visualize</p>
+              <div class="upload-files">
+                <div class="form-group">
+                  <label class="form-label">Nodes File (.jsonl)</label>
+                  <input type="file" class="form-input" id="nodesFile" accept=".jsonl">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Edges File (.jsonl)</label>
+                  <input type="file" class="form-input" id="edgesFile" accept=".jsonl">
+                </div>
+              </div>
+              <div class="action-buttons" style="justify-content: center;">
+                <button class="btn btn-primary" id="loadBtn">Load Files</button>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
+              <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; color: var(--text-secondary);">API Actions</h4>
+              <div class="action-buttons">
+                <button class="btn btn-secondary" id="fetchApiBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"></path>
+                  </svg>
+                  Fetch from API
+                </button>
+                <button class="btn btn-secondary" id="downloadReportBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  Download Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="tab-settings" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Connection Settings</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">API Base URL</label>
+              <input type="text" class="form-input" id="apiBase" value="http://127.0.0.1:5000">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Graph Settings</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Layout Algorithm</label>
+              <select class="form-select" id="layoutSelect">
+                <option value="cose">COSE (Force-directed)</option>
+                <option value="breadthfirst">Breadthfirst (Hierarchical)</option>
+                <option value="concentric">Concentric (Circular)</option>
+                <option value="grid">Grid</option>
+                <option value="circle">Circle</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Node Label Position</label>
+              <select class="form-select" id="labelPos">
+                <option value="center">Center</option>
+                <option value="bottom">Below</option>
+                <option value="top">Above</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Appearance</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Theme</label>
+              <select class="form-select" id="theme">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </main>
   </div>
+
   <script>
+    // State
+    let cy = null;
+    let nodes = [];
+    let edges = [];
+    let isFullscreen = false;
+
+    // Utilities
     function parseJsonl(text) {
       return text.trim().split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line));
     }
+
     async function readFile(input) {
-      if (!input.files || input.files.length === 0) return [];
-      const file = input.files[0];
-      const text = await file.text();
-      return parseJsonl(text);
+      if (!input.files || !input.files.length) return [];
+      return parseJsonl(await input.files[0].text());
     }
-    function renderStats(nodes, edges) {
-      const counts = {};
-      nodes.forEach(n => { counts[n.type] = (counts[n.type] || 0) + 1; });
-      renderEnvDetails(counts);
-      renderEnvSummary(nodes);
-    }
-    function renderAttacks(edges) {
-      const tbody = document.querySelector('#attacksTable tbody');
-      const attacks = edges.filter(e => e.type === 'AttackPath');
-      tbody.innerHTML = attacks.map(e => {
-        const sev = (e.properties && e.properties.severity) || 'info';
-        return `<tr>
-          <td>${e.properties?.rule || ''}</td>
-          <td>${e.properties?.description || ''}</td>
-          <td><span class="pill ${sev}">${sev}</span></td>
-          <td><code>${e.src}</code> → <code>${e.dst}</code></td>
-        </tr>`;
-      }).join('') || '<tr><td colspan="4">No attack paths</td></tr>';
-    }
-    function renderEnvDetails(counts) {
-      const env = document.getElementById('envDetails');
-      if (!env) return;
-      const keys = Object.keys(counts).sort();
-      env.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #2d3748;"><span>${k}</span><span>${counts[k]}</span></div>`).join('') || '<div>No data</div>';
-    }
-    function renderEnvSummary(nodes) {
-      const summary = document.getElementById('envSummary');
-      if (!summary) return;
-      const samples = nodes.slice(0, 50).map(n => `<li><strong>${n.type}</strong>: ${n.id}</li>`).join('');
-      summary.innerHTML = samples ? `<ul>${samples}</ul>` : 'No data';
-    }
+
     function nodeLabel(n) {
-      const props = n.properties || {};
-      return props.name || props.role_name || props.user_name || props.id || n.id || n.type;
+      const p = n.properties || {};
+      return p.name || p.role_name || p.user_name || n.id?.split('/').pop() || n.type;
     }
+
     function nodeColor(type) {
       const t = (type || '').toLowerCase();
-      if (t.includes('account')) return '#2c3e50';
-      if (t.includes('role')) return '#6c5ce7';
-      if (t.includes('user')) return '#00b894';
-      if (t.includes('s3')) return '#f1c40f';
-      if (t.includes('kms')) return '#d35400';
-      if (t.includes('securitygroup')) return '#0984e3';
-      if (t.includes('ami') || t.includes('snapshot')) return '#8e44ad';
-      if (t.includes('ecr')) return '#16a085';
-      if (t.includes('lambda')) return '#e67e22';
-      return '#4A90E2';
+      if (t.includes('account')) return getComputedStyle(document.documentElement).getPropertyValue('--node-account').trim();
+      if (t.includes('role')) return getComputedStyle(document.documentElement).getPropertyValue('--node-role').trim();
+      if (t.includes('user')) return getComputedStyle(document.documentElement).getPropertyValue('--node-user').trim();
+      if (t.includes('s3')) return getComputedStyle(document.documentElement).getPropertyValue('--node-s3').trim();
+      if (t.includes('ec2') || t.includes('instance')) return getComputedStyle(document.documentElement).getPropertyValue('--node-ec2').trim();
+      if (t.includes('lambda')) return getComputedStyle(document.documentElement).getPropertyValue('--node-lambda').trim();
+      if (t.includes('kms')) return getComputedStyle(document.documentElement).getPropertyValue('--node-kms').trim();
+      if (t.includes('security')) return getComputedStyle(document.documentElement).getPropertyValue('--node-sg').trim();
+      return getComputedStyle(document.documentElement).getPropertyValue('--node-default').trim();
     }
-    function buildGraph(nodes, edges, severityFilter, searchTerm, typeFilter, layoutName) {
-      if (typeof cytoscape === 'undefined') return;
-      const search = searchTerm?.toLowerCase() || '';
-      const typeFilterLower = typeFilter?.toLowerCase() || '';
-      const filteredEdges = edges.filter(e => {
+
+    function severityColor(sev) {
+      const s = (sev || '').toLowerCase();
+      if (s === 'critical') return getComputedStyle(document.documentElement).getPropertyValue('--severity-critical').trim();
+      if (s === 'high') return getComputedStyle(document.documentElement).getPropertyValue('--severity-high').trim();
+      if (s === 'medium') return getComputedStyle(document.documentElement).getPropertyValue('--severity-medium').trim();
+      if (s === 'low') return getComputedStyle(document.documentElement).getPropertyValue('--severity-low').trim();
+      return getComputedStyle(document.documentElement).getPropertyValue('--severity-info').trim();
+    }
+
+    // Build graph
+    function buildGraph(nodeData, edgeData) {
+      const severityFilter = document.getElementById('severityFilter').value.toLowerCase();
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+      const layout = document.getElementById('layoutSelect').value;
+
+      // Filter edges
+      const filteredEdges = edgeData.filter(e => {
         if (e.type !== 'AttackPath') return true;
-        if (severityFilter && (e.properties?.severity || '').toLowerCase() !== severityFilter.toLowerCase()) return false;
+        if (severityFilter && (e.properties?.severity || '').toLowerCase() !== severityFilter) return false;
         return true;
       });
+
+      // Build node map with filtering
       const nodeMap = {};
-      nodes.forEach(n => {
-        if (search && !n.id.toLowerCase().includes(search)) return;
-        if (typeFilterLower && n.type.toLowerCase().indexOf(typeFilterLower) === -1) return;
+      nodeData.forEach(n => {
+        if (searchTerm && !n.id.toLowerCase().includes(searchTerm)) return;
+        if (typeFilter && !n.type.toLowerCase().includes(typeFilter)) return;
         nodeMap[n.id] = n;
       });
+
+      // Ensure edge endpoints exist
       filteredEdges.forEach(e => {
-        if (!nodeMap[e.src]) {
-          nodeMap[e.src] = { id: e.src, type: 'Unknown' };
-        }
-        if (!nodeMap[e.dst]) {
-          nodeMap[e.dst] = { id: e.dst, type: 'Unknown' };
-        }
+        if (!nodeMap[e.src]) nodeMap[e.src] = { id: e.src, type: 'Unknown', properties: {} };
+        if (!nodeMap[e.dst]) nodeMap[e.dst] = { id: e.dst, type: 'Unknown', properties: {} };
       });
+
+      // Build Cytoscape elements
       const elements = [];
-      Object.values(nodeMap).forEach(n => elements.push({ data: { id: n.id, label: nodeLabel(n), type: n.type } }));
-      filteredEdges.forEach((e, idx) => {
+      Object.values(nodeMap).forEach(n => {
+        elements.push({
+          data: { id: n.id, label: nodeLabel(n), type: n.type, properties: n.properties }
+        });
+      });
+
+      filteredEdges.forEach((e, i) => {
         elements.push({
           data: {
-            id: `${e.src}->${e.dst}:${e.type}:${idx}`,
+            id: `${e.src}->${e.dst}:${e.type}:${i}`,
             source: e.src,
             target: e.dst,
             label: e.type === 'AttackPath' ? (e.properties?.rule || e.type) : e.type,
             severity: e.properties?.severity || '',
+            edgeType: e.type,
+            properties: e.properties
           },
-          classes: e.type === 'AttackPath' ? 'attack' : '',
+          classes: e.type === 'AttackPath' ? 'attack' : ''
         });
       });
-      if (!window.cy || typeof window.cy.add !== 'function') {
-        window.cy = cytoscape({ container: document.getElementById('cy') });
-        bindDetail(window.cy);
+
+      // Initialize or update Cytoscape
+      if (!cy) {
+        cy = cytoscape({
+          container: document.getElementById('cy'),
+          elements: elements,
+          style: getCyStyle(),
+          layout: { name: layout, animate: false }
+        });
+        setupCyEvents();
+      } else {
+        cy.elements().remove();
+        cy.add(elements);
+        cy.layout({ name: layout, animate: false }).run();
       }
-      window.cy.elements().remove();
-      window.cy.add(elements);
-      applyStyles(window.cy);
-      window.cy.layout({ name: layoutName || 'cose', animate: false }).run();
     }
-    function colorBySeverity(sev) {
-      const s = (sev || '').toLowerCase();
-      if (s === 'high') return '#c0392b';
-      if (s === 'medium') return '#f39c12';
-      if (s === 'low') return '#27ae60';
-      return '#c0392b';
+
+    function getCyStyle() {
+      const isDark = !document.body.classList.contains('light');
+      const textColor = isDark ? '#f1f5f9' : '#0f172a';
+      const edgeColor = isDark ? '#4a5568' : '#cbd5e1';
+
+      return [
+        {
+          selector: 'node',
+          style: {
+            'background-color': ele => nodeColor(ele.data('type')),
+            'label': 'data(label)',
+            'font-size': '10px',
+            'font-weight': '500',
+            'color': textColor,
+            'text-valign': document.getElementById('labelPos')?.value || 'center',
+            'text-halign': 'center',
+            'text-margin-y': document.getElementById('labelPos')?.value === 'bottom' ? 8 : (document.getElementById('labelPos')?.value === 'top' ? -8 : 0),
+            'width': 32,
+            'height': 32,
+            'border-width': 2,
+            'border-color': isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+            'text-background-color': isDark ? '#0f1419' : '#ffffff',
+            'text-background-opacity': 0.9,
+            'text-background-padding': '3px',
+            'text-background-shape': 'roundrectangle',
+            'font-family': 'Inter, sans-serif'
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 1.5,
+            'line-color': edgeColor,
+            'target-arrow-color': edgeColor,
+            'target-arrow-shape': 'triangle',
+            'arrow-scale': 0.8,
+            'curve-style': 'bezier',
+            'label': 'data(label)',
+            'font-size': '8px',
+            'color': isDark ? '#94a3b8' : '#64748b',
+            'text-rotation': 'autorotate',
+            'font-family': 'Inter, sans-serif'
+          }
+        },
+        {
+          selector: '.attack',
+          style: {
+            'line-color': ele => severityColor(ele.data('severity')),
+            'target-arrow-color': ele => severityColor(ele.data('severity')),
+            'width': 2.5,
+            'line-style': 'solid'
+          }
+        },
+        {
+          selector: ':selected',
+          style: {
+            'border-width': 3,
+            'border-color': '#3b82f6'
+          }
+        }
+      ];
     }
-    function bindDetail(cy) {
-      const detail = document.getElementById('detailContent');
+
+    function setupCyEvents() {
       cy.on('tap', 'node, edge', evt => {
         const data = evt.target.data();
-        const props = evt.target.data();
-        detail.innerHTML = `<strong>${evt.target.isNode() ? 'Node' : 'Edge'}:</strong> <code>${data.id || ''}</code><br><strong>Data:</strong><pre>${JSON.stringify(props, null, 2)}</pre>`;
+        const isNode = evt.target.isNode();
+        const html = `
+          <div style="font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: var(--accent-primary);">
+              ${isNode ? 'Node' : 'Edge'}: ${data.type || data.edgeType || 'Unknown'}
+            </div>
+            <div style="margin-bottom: 8px;">
+              <code style="word-break: break-all;">${data.id || ''}</code>
+            </div>
+            <pre style="margin: 0; max-height: 300px; overflow: auto;">${JSON.stringify(data.properties || data, null, 2)}</pre>
+          </div>
+        `;
+        document.getElementById('detailContent').innerHTML = html;
       });
+
       cy.on('tap', evt => {
         if (evt.target === cy) {
-          detail.innerHTML = 'Click a node or edge to view details.';
+          document.getElementById('detailContent').innerHTML = `
+            <div class="detail-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4M12 8h.01"></path>
+              </svg>
+              <p>Click a node or edge in the graph to view details</p>
+            </div>
+          `;
         }
       });
     }
-    function applyStyles(cy) {
-      const theme = document.getElementById('theme').value || 'light';
-      const labelPos = document.getElementById('labelPos').value || 'center';
-      const textColors = theme === 'dark' ? '#f2f2f2' : '#111';
-      const bgColor = theme === 'dark' ? '#0f121a' : '#f8f9fb';
-      const edgeColor = theme === 'dark' ? '#7f8c8d' : '#ccc';
-      const textBg = theme === 'dark' ? '#111c' : '#ffffffcc';
-      const nodeTextColor = theme === 'dark' ? '#111' : '#111'; // use dark text on pill backgrounds
-      document.body.style.background = bgColor;
-      document.body.style.color = textColors;
-      const light = theme === 'light';
-      document.querySelectorAll('.card').forEach(card => {
-        card.style.background = light ? '#fff' : '#1a1f2b';
-        card.style.borderColor = light ? '#ddd' : '#2d3748';
-        card.style.color = light ? '#111' : '#e6e8ef';
+
+    function renderAttacks(edgeData) {
+      const attacks = edgeData.filter(e => e.type === 'AttackPath');
+      const severityFilter = document.getElementById('severityFilter').value.toLowerCase();
+      const filtered = attacks.filter(e => {
+        if (severityFilter && (e.properties?.severity || '').toLowerCase() !== severityFilter) return false;
+        return true;
       });
-      const drop = document.querySelector('.drop');
-      if (drop) {
-        drop.style.background = light ? '#fff' : '#1a1f2b';
-        drop.style.borderColor = light ? '#444' : '#2d3748';
-        drop.style.color = light ? '#111' : '#e6e8ef';
-      }
-      document.querySelectorAll('input, select, button, textarea').forEach(el => {
-        el.style.background = light ? '#fff' : '#0f121a';
-        el.style.color = light ? '#111' : '#e6e8ef';
-        el.style.border = light ? '1px solid #ccc' : '1px solid #2d3748';
-      });
-      const headerEl = document.querySelector('header');
-      if (headerEl) {
-        headerEl.style.background = light ? '#f8f9fb' : '#0f121a';
-        headerEl.style.color = light ? '#111' : '#f2f2f2';
-      }
-      document.querySelectorAll('.status .pill').forEach(p => {
-        p.style.background = light ? '#1e7cf2' : '#1e7cf2';
-        p.style.color = '#fff';
-      });
-      const cyContainer = document.getElementById('cy');
-      if (cyContainer) cyContainer.style.background = light ? '#fff' : '#0b0f17';
-      document.querySelector('.main').style.background = light ? '#f8f9fb' : '#0f121a';
-      const navEl = document.querySelector('nav');
-      if (navEl) navEl.style.background = light ? '#f0f2f7' : '#111625';
-      document.querySelectorAll('nav .section').forEach(sec => {
-        sec.style.background = light ? '#f7f8fc' : '#151b2c';
-        sec.style.borderColor = light ? '#d1d5db' : '#1f2a3d';
-        sec.style.color = light ? '#111' : '#e6e8ef';
-      });
-      const tabs = document.querySelectorAll('.tab-btn');
-      tabs.forEach(btn => {
-        if (btn.dataset.tab === 'graph') {
-          btn.style.background = '#2d8cff';
-        } else {
-          btn.style.background = '#1f2733';
-        }
-        btn.style.color = '#fff';
-      });
-      cy.style()
-        .selector('node').style({
-          'background-color': ele => nodeColor(ele.data('type')),
-          'label': 'data(label)',
-          'font-size': 9,
-          'color': nodeTextColor,
-          'width': 28,
-          'height': 28,
-          'text-wrap': 'wrap',
-          'text-max-width': 80,
-          'text-valign': labelPos === 'top' ? 'top' : labelPos === 'bottom' ? 'bottom' : 'center',
-          'text-halign': labelPos === 'left' ? 'left' : labelPos === 'right' ? 'right' : 'center',
-          'text-margin-y': labelPos === 'top' ? -12 : labelPos === 'bottom' ? 12 : 0,
-          'text-margin-x': labelPos === 'left' ? -12 : labelPos === 'right' ? 12 : 0,
-          'font-weight': 'bold',
-          'border-width': 2,
-          'border-color': theme === 'dark' ? '#ffffff66' : '#00000033',
-          'shadow-blur': 8,
-          'shadow-color': theme === 'dark' ? '#0007' : '#0003',
-          'text-background-color': theme === 'dark' ? '#f4f4f4' : '#ffffff',
-          'text-background-opacity': 0.9,
-          'text-background-shape': 'roundrectangle',
-          'text-background-padding': 2
-        })
-        .selector('edge').style({
-          'width': 1.2,
-          'line-color': edgeColor,
-          'target-arrow-shape': 'triangle',
-          'arrow-scale': 0.8,
-          'curve-style': 'bezier',
-          'label': 'data(label)',
-          'font-size': 7,
-          'color': textColors,
-          'target-arrow-color': edgeColor
-        })
-        .selector('.attack').style({
-          'line-color': ele => colorBySeverity(ele.data('severity')),
-          'target-arrow-color': ele => colorBySeverity(ele.data('severity')),
-          'width': 2,
-          'label': 'data(label)',
-          'color': textColors
-        })
-        .update();
-    }
-    document.getElementById('loadBtn').addEventListener('click', async () => {
-      const msg = document.getElementById('msg');
-      msg.textContent = '';
-      if (typeof cytoscape === 'undefined') {
-        msg.textContent = 'Cytoscape failed to load; check network or try again.';
+
+      document.getElementById('attackCount').textContent = `${filtered.length} finding${filtered.length !== 1 ? 's' : ''}`;
+
+      const tbody = document.querySelector('#attacksTable tbody');
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="empty-state" style="padding: 32px;"><p>No attack paths found</p></td></tr>`;
         return;
       }
-      const nodes = await readFile(document.getElementById('nodesFile'));
-      const edges = await readFile(document.getElementById('edgesFile'));
-      window._awsh_nodes = nodes;
-      window._awsh_edges = edges;
-      renderStats(nodes, edges);
-      renderAttacks(edges);
-      buildGraph(
-        nodes,
-        edges,
-        document.getElementById('severityFilter').value,
-        document.getElementById('searchInput').value,
-        document.getElementById('typeFilter').value,
-        document.getElementById('layoutSelect').value
-      );
-    });
-    document.getElementById('filterBtn').addEventListener('click', () => {
-      const nodes = window._awsh_nodes || [];
-      const edges = window._awsh_edges || [];
-      renderAttacks(edges.filter(e => {
-        if (e.type !== 'AttackPath') return true;
-        const sev = (e.properties?.severity || '').toLowerCase();
-        const filter = document.getElementById('severityFilter').value.toLowerCase();
-        if (filter && sev !== filter) return false;
-        return true;
-      }));
-      buildGraph(
-        nodes,
-        edges,
-        document.getElementById('severityFilter').value,
-        document.getElementById('searchInput').value,
-        document.getElementById('typeFilter').value,
-        document.getElementById('layoutSelect').value
-      );
-    });
-    async function fetchFromApi() {
-        const base = document.getElementById('apiBase').value;
-        const msg = document.getElementById('msg');
-        msg.textContent = '';
-        try {
-          const resp = await fetch(`${base}/graph?limit=1000`);
-          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-          const data = await resp.json();
-          const nodes = data.nodes || [];
-          const edges = data.edges || [];
-          window._awsh_nodes = nodes;
-          window._awsh_edges = edges;
-          renderStats(nodes, edges);
-          renderAttacks(edges);
-          buildGraph(
-            nodes,
-            edges,
-            document.getElementById('severityFilter').value,
-            document.getElementById('searchInput').value,
-            document.getElementById('typeFilter').value,
-            document.getElementById('layoutSelect').value
-          );
-          updateStatus(true, true);
-        } catch (err) {
-          msg.textContent = `API fetch failed: ${err}`;
-          updateStatus(false, false);
-        }
+
+      tbody.innerHTML = filtered.map(e => {
+        const sev = (e.properties?.severity || 'info').toLowerCase();
+        return `
+          <tr>
+            <td><code>${e.properties?.rule || 'unknown'}</code></td>
+            <td>${e.properties?.description || ''}</td>
+            <td><span class="severity ${sev}">${sev}</span></td>
+            <td>
+              <code style="font-size: 11px;">${truncate(e.src, 30)}</code>
+              <span class="arrow">→</span>
+              <code style="font-size: 11px;">${truncate(e.dst, 30)}</code>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
-    document.getElementById('fetchApiBtn').addEventListener('click', fetchFromApi);
+
+    function truncate(str, len) {
+      if (!str) return '';
+      return str.length > len ? str.slice(0, len) + '...' : str;
+    }
+
+    function renderStats(nodeData) {
+      const counts = {};
+      nodeData.forEach(n => {
+        counts[n.type] = (counts[n.type] || 0) + 1;
+      });
+
+      const grid = document.getElementById('statsGrid');
+      const keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+      if (!keys.length) {
+        grid.innerHTML = '<div class="empty-state"><p>Load data to see resource statistics</p></div>';
+        return;
+      }
+
+      grid.innerHTML = keys.map(k => `
+        <div class="stat-card">
+          <div class="stat-value">${counts[k]}</div>
+          <div class="stat-label">${k}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderEnvList(nodeData) {
+      document.getElementById('objectCount').textContent = `${nodeData.length} object${nodeData.length !== 1 ? 's' : ''}`;
+
+      const list = document.getElementById('envList');
+      if (!nodeData.length) {
+        list.innerHTML = '<li class="empty-state"><p>No environment data loaded</p></li>';
+        return;
+      }
+
+      list.innerHTML = nodeData.slice(0, 100).map(n => `
+        <li class="env-item">
+          <span class="env-type">${n.type}</span>
+          <span class="env-id">${n.id}</span>
+        </li>
+      `).join('');
+    }
+
+    function showMessage(text, type = 'error') {
+      const msg = document.getElementById('msg');
+      msg.textContent = text;
+      msg.className = `message ${type}`;
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 5000);
+    }
 
     function updateStatus(apiOk, neoOk) {
-      const apiPill = document.getElementById('apiStatus');
-      const neoPill = document.getElementById('neo4jStatus');
-      apiPill.textContent = `API: ${apiOk ? 'OK' : 'Error'}`;
-      apiPill.style.background = apiOk ? '#16a085' : '#c0392b';
-      neoPill.textContent = `Neo4j: ${neoOk ? 'OK' : 'Unknown'}`;
-      neoPill.style.background = neoOk ? '#16a085' : '#c0392b';
+      const api = document.getElementById('apiStatus');
+      const neo = document.getElementById('neo4jStatus');
+
+      api.className = `status-badge ${apiOk ? 'ok' : 'error'}`;
+      api.innerHTML = `<span class="status-dot"></span><span>API: ${apiOk ? 'Connected' : 'Error'}</span>`;
+
+      neo.className = `status-badge ${neoOk ? 'ok' : ''}`;
+      neo.innerHTML = `<span class="status-dot"></span><span>Neo4j: ${neoOk ? 'Connected' : 'Unknown'}</span>`;
     }
 
-    async function runCypher() {
+    // Event Listeners
+    document.getElementById('loadBtn').addEventListener('click', async () => {
+      try {
+        nodes = await readFile(document.getElementById('nodesFile'));
+        edges = await readFile(document.getElementById('edgesFile'));
+
+        if (!nodes.length && !edges.length) {
+          showMessage('No data found in uploaded files');
+          return;
+        }
+
+        buildGraph(nodes, edges);
+        renderAttacks(edges);
+        renderStats(nodes);
+        renderEnvList(nodes);
+
+        // Switch to graph tab
+        switchTab('graph');
+      } catch (err) {
+        showMessage(`Error loading files: ${err.message}`);
+      }
+    });
+
+    document.getElementById('filterBtn').addEventListener('click', () => {
+      if (!nodes.length && !edges.length) return;
+      buildGraph(nodes, edges);
+      renderAttacks(edges);
+    });
+
+    document.getElementById('fetchApiBtn').addEventListener('click', async () => {
+      const base = document.getElementById('apiBase').value;
+      try {
+        const resp = await fetch(`${base}/graph?limit=1000`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        nodes = data.nodes || [];
+        edges = data.edges || [];
+
+        buildGraph(nodes, edges);
+        renderAttacks(edges);
+        renderStats(nodes);
+        renderEnvList(nodes);
+        updateStatus(true, true);
+        switchTab('graph');
+      } catch (err) {
+        showMessage(`API fetch failed: ${err.message}`);
+        updateStatus(false, false);
+      }
+    });
+
+    document.getElementById('runCypherBtn').addEventListener('click', async () => {
       const base = document.getElementById('apiBase').value;
       const cypher = document.getElementById('cypherInput').value;
       const status = document.getElementById('cypherStatus');
       const output = document.getElementById('cypherOutput');
+
       status.textContent = 'Running...';
+      status.className = 'cypher-status';
+
       try {
         const resp = await fetch(`${base}/query`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ cypher, limit: 200 }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cypher, limit: 200 })
         });
         const data = await resp.json();
+
         if (!resp.ok) {
           status.textContent = `Error: ${data.error || resp.status}`;
+          status.className = 'cypher-status error';
           return;
         }
-        status.textContent = 'Success';
+
+        status.textContent = `Success - ${(data.results || []).length} results`;
+        status.className = 'cypher-status success';
         output.textContent = JSON.stringify(data.results || [], null, 2);
       } catch (err) {
-        status.textContent = `Error: ${err}`;
-      }
-    }
-    document.getElementById('runCypherBtn').addEventListener('click', runCypher);
-
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const themeSelect = document.getElementById('theme');
-      themeSelect.value = themeSelect.value === 'dark' ? 'light' : 'dark';
-      applyStyles(window.cy || {});
-      if (window._awsh_nodes && window._awsh_edges) {
-        buildGraph(
-          window._awsh_nodes,
-          window._awsh_edges,
-          document.getElementById('severityFilter').value,
-          document.getElementById('searchInput').value,
-          document.getElementById('typeFilter').value,
-          document.getElementById('layoutSelect').value
-        );
+        status.textContent = `Error: ${err.message}`;
+        status.className = 'cypher-status error';
       }
     });
 
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.style.background = '#1f2733');
-        btn.style.background = '#2d8cff';
-        const tab = btn.dataset.tab;
-        ['graph','env','data','settings'].forEach(t => {
-          const el = document.getElementById(`tab-${t}`);
-          if (el) el.style.display = (tab === t) ? 'block' : 'none';
-        });
+    document.getElementById('downloadReportBtn').addEventListener('click', () => {
+      const attacks = edges.filter(e => e.type === 'AttackPath');
+      const counts = {};
+      nodes.forEach(n => { counts[n.type] = (counts[n.type] || 0) + 1; });
+
+      const report = {
+        generated_at: new Date().toISOString(),
+        summary: {
+          total_nodes: nodes.length,
+          total_edges: edges.length,
+          attack_paths: attacks.length,
+          resource_counts: counts
+        },
+        attack_paths: attacks,
+        sample_nodes: nodes.slice(0, 100)
+      };
+
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cloudhound-report-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Tab switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+
+      ['graph', 'env', 'data', 'settings'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (el) el.classList.toggle('hidden', t !== tabName);
       });
+
+      if (tabName === 'graph' && cy) cy.resize();
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
 
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    sidebarToggle.addEventListener('click', () => {
-      const layout = document.querySelector('.layout');
-      const nav = document.getElementById('sidebar');
-      const collapsed = layout.classList.toggle('collapsed');
-      nav.classList.toggle('collapsed', collapsed);
-    });
-
-    const fsBtn = document.getElementById('fullscreenBtn');
-    let fullScreenOn = false;
-    fsBtn.addEventListener('click', () => {
-      const cyCard = document.getElementById('cy').parentElement;
-      fullScreenOn = !fullScreenOn;
-      cyCard.style.position = fullScreenOn ? 'fixed' : 'relative';
-      cyCard.style.top = fullScreenOn ? '10px' : 'auto';
-      cyCard.style.left = fullScreenOn ? '10px' : 'auto';
-      cyCard.style.right = fullScreenOn ? '10px' : 'auto';
-      cyCard.style.bottom = fullScreenOn ? '10px' : 'auto';
-      cyCard.style.zIndex = fullScreenOn ? '999' : '1';
-      if (fullScreenOn) {
-        document.body.style.overflow = 'hidden';
-        document.getElementById('cy').style.height = 'calc(100vh - 80px)';
-        if (window.cy) window.cy.resize();
-      } else {
-        document.body.style.overflow = 'hidden';
-        document.getElementById('cy').style.height = '';
-        if (window.cy) window.cy.resize();
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      document.getElementById('theme').value = document.body.classList.contains('light') ? 'light' : 'dark';
+      if (cy) {
+        cy.style(getCyStyle());
       }
     });
 
+    document.getElementById('theme').addEventListener('change', (e) => {
+      document.body.classList.toggle('light', e.target.value === 'light');
+      if (cy) {
+        cy.style(getCyStyle());
+      }
+    });
+
+    // Fullscreen
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      const card = document.getElementById('graphCard');
+      isFullscreen = !isFullscreen;
+      card.classList.toggle('graph-fullscreen', isFullscreen);
+      document.getElementById('fullscreenBtn').textContent = isFullscreen ? 'Exit Fullscreen' : 'Fullscreen';
+      if (cy) cy.resize();
+    });
+
+    // Reset layout
+    document.getElementById('resetLayoutBtn').addEventListener('click', () => {
+      if (cy) {
+        cy.layout({ name: document.getElementById('layoutSelect').value, animate: true }).run();
+      }
+    });
+
+    // Layout change
+    document.getElementById('layoutSelect').addEventListener('change', () => {
+      if (cy) {
+        cy.layout({ name: document.getElementById('layoutSelect').value, animate: true }).run();
+      }
+    });
+
+    // Label position change
+    document.getElementById('labelPos').addEventListener('change', () => {
+      if (cy) {
+        cy.style(getCyStyle());
+      }
+    });
+
+    // Graph resizer
     const resizer = document.getElementById('graphResizer');
     let isResizing = false;
+
     resizer.addEventListener('mousedown', (e) => {
       isResizing = true;
       e.preventDefault();
     });
+
     window.addEventListener('mousemove', (e) => {
       if (!isResizing) return;
       const cyEl = document.getElementById('cy');
-      const newH = Math.min(900, Math.max(300, e.clientY - cyEl.getBoundingClientRect().top));
+      const rect = cyEl.getBoundingClientRect();
+      const newH = Math.min(900, Math.max(300, e.clientY - rect.top));
       cyEl.style.height = `${newH}px`;
-      if (window.cy) window.cy.resize();
+      if (cy) cy.resize();
     });
+
     window.addEventListener('mouseup', () => { isResizing = false; });
 
-    const downloadBtn = document.getElementById('downloadReportBtn');
-    if (downloadBtn) {
-      downloadBtn.addEventListener('click', () => {
-        const nodes = window._awsh_nodes || [];
-        const edges = window._awsh_edges || [];
-        const attackEdges = edges.filter(e => e.type === 'AttackPath');
-        const counts = {};
-        nodes.forEach(n => { counts[n.type] = (counts[n.type] || 0) + 1; });
-        const report = {
-          generated_at: new Date().toISOString(),
-          node_count: nodes.length,
-          edge_count: edges.length,
-          counts,
-          sample_nodes: nodes.slice(0, 100),
-          attack_paths: attackEdges,
-        };
-        const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'awshound-report.json';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      });
-    }
+    // Escape key for fullscreen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        document.getElementById('fullscreenBtn').click();
+      }
+    });
 
-    // Initial style apply
-    applyStyles(window.cy || {});
+    // Initial status check
+    (async function checkStatus() {
+      const base = document.getElementById('apiBase').value;
+      try {
+        const resp = await fetch(`${base}/health`);
+        const data = await resp.json();
+        updateStatus(data.status === 'ok', data.status === 'ok');
+      } catch {
+        updateStatus(false, false);
+      }
+    })();
   </script>
 </body>
 </html>

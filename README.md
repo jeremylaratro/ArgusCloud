@@ -141,4 +141,6 @@ ui/
 
 ## License
 
-MIT
+This software is licensed for **non-commercial use only**. See [LICENSE](LICENSE) for details.
+
+For commercial licensing inquiries, please contact the author.
