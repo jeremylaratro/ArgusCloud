@@ -1,0 +1,5 @@
+{"id": "account:123456789012", "type": "Account", "properties": {"name": "demo"}}
+{"id": "arn:aws:iam::123456789012:role/admin", "type": "Role", "properties": {"role_name": "admin", "is_admin": true}}
+{"id": "arn:aws:iam::123456789012:role/app", "type": "Role", "properties": {"role_name": "app"}}
+{"id": "arn:aws:iam::123456789012:user/alice", "type": "User", "properties": {"user_name": "alice"}}
+{"id": "arn:aws:s3:::public-bucket", "type": "S3Bucket", "properties": {"name": "public-bucket"}}

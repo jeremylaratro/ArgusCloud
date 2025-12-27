@@ -1,0 +1,30 @@
+{"src":"arn:aws:iam::111111111111:role/Admin","dst":"arn:aws:iam::111111111111:role/AppRole","type":"Trusts","properties":{"source":"iam:AssumeRolePolicyDocument"}}
+{"src":"arn:aws:iam::111111111111:role/AppRole","dst":"arn:aws:iam::111111111111:user/alice","type":"Trusts","properties":{"source":"iam:AssumeRolePolicyDocument"}}
+{"src":"arn:aws:iam::111111111111:user/alice","dst":"arn:aws:iam::111111111111:role/Admin","type":"AttackPath","properties":{"rule":"assume-role-chain","description":"alice -> AppRole -> Admin","severity":"high","path":["arn:aws:iam::111111111111:user/alice","arn:aws:iam::111111111111:role/AppRole","arn:aws:iam::111111111111:role/Admin"]}}
+{"src":"arn:aws:iam::111111111111:user/bob","dst":"arn:aws:iam::111111111111:role/AppRole","type":"AttackPath","properties":{"rule":"assume-role-chain","description":"bob -> AppRole","severity":"high","path":["arn:aws:iam::111111111111:user/bob","arn:aws:iam::111111111111:role/AppRole"]}}
+{"src":"arn:aws:s3:::public-bucket:policy","dst":"internet","type":"AttackPath","properties":{"rule":"public-s3","description":"Public bucket","severity":"high"}}
+{"src":"arn:aws:iam::222222222222:role/ProdRead","dst":"arn:aws:iam::111111111111:role/AppRole","type":"Trusts","properties":{"source":"iam:AssumeRolePolicyDocument"}}
+{"src":"arn:aws:iam::222222222222:role/ProdRead","dst":"arn:aws:s3:::prod-bucket:policy","type":"AttackPath","properties":{"rule":"policy-grant","description":"Access to prod bucket","severity":"medium"}}
+{"src":"arn:aws:kms:us-east-1:222222222222:key/abcd:policy","dst":"internet","type":"AttackPath","properties":{"rule":"kms-external-access","description":"KMS policy open","severity":"high"}}
+{"src":"sg-111","dst":"internet","type":"AttackPath","properties":{"rule":"open-sg","description":"SG open to world","severity":"medium"}}
+{"src":"i-123","dst":"sg-111","type":"MemberOfSecurityGroup","properties":{}}
+{"src":"i-123","dst":"subnet-aaa","type":"InSubnet","properties":{}}
+{"src":"i-123","dst":"vpc-aaa","type":"InVPC","properties":{}}
+{"src":"i-456","dst":"sg-222","type":"MemberOfSecurityGroup","properties":{}}
+{"src":"i-456","dst":"subnet-aaa","type":"InSubnet","properties":{}}
+{"src":"arn:aws:eks:us-east-1:222222222222:cluster/prod-eks","dst":"arn:aws:iam::222222222222:role/EKSRole","type":"AssumesRole","properties":{"source":"eks-cluster-service-role"}}
+{"src":"arn:aws:eks:us-east-1:333333333333:cluster/dev-eks","dst":"arn:aws:iam::333333333333:role/EKSRoleDev","type":"AssumesRole","properties":{"source":"eks-cluster-service-role"}}
+{"src":"arn:aws:ecr:us-east-1:222222222222:repository/app:policy","dst":"internet","type":"AttackPath","properties":{"rule":"ecr-cross-account","description":"ECR open to other account","severity":"medium"}}
+{"src":"arn:aws:ecr:us-east-1:333333333333:repository/devapp:policy","dst":"internet","type":"AttackPath","properties":{"rule":"ecr-cross-account","description":"ECR public pull","severity":"medium"}}
+{"src":"lambda:process","dst":"arn:aws:iam::222222222222:role/LambdaExec","type":"AssumesRole","properties":{"source":"lambda-execution-role"}}
+{"src":"lambda:devfn","dst":"arn:aws:iam::333333333333:role/LambdaExecDev","type":"AssumesRole","properties":{"source":"lambda-execution-role"}}
+{"src":"cloudtrail:main","dst":"cloudtrail:not-logging","type":"AttackPath","properties":{"rule":"cloudtrail-not-logging","description":"Trail not logging","severity":"high"}}
+{"src":"arn:aws:rds:us-east-1:222222222222:snapshot:rds-snap","dst":"internet","type":"AttackPath","properties":{"rule":"rds-public-snapshot","description":"Public RDS snapshot","severity":"high"}}
+{"src":"codepipeline:deploy-app","dst":"arn:aws:iam::222222222222:role/CPRole","type":"AttackPath","properties":{"rule":"codepipeline-role","description":"Pipeline role risk","severity":"medium"}}
+{"src":"codepipeline:deploy-dev","dst":"arn:aws:iam::333333333333:role/CPDevRole","type":"AttackPath","properties":{"rule":"codepipeline-role","description":"Pipeline role risk","severity":"medium"}}
+{"src":"arn:aws:s3:::prod-bucket","dst":"arn:aws:s3:::prod-bucket:policy","type":"ResourcePolicy","properties":{}}
+{"src":"arn:aws:s3:::dev-bucket","dst":"arn:aws:s3:::dev-bucket:policy","type":"ResourcePolicy","properties":{}}
+{"src":"arn:aws:iam::222222222222:role/EKSRole","dst":"arn:aws:iam::111111111111:role/Admin","type":"AttackPath","properties":{"rule":"assume-role-chain","description":"Cross account to admin","severity":"high","path":["arn:aws:iam::222222222222:role/EKSRole","arn:aws:iam::111111111111:role/Admin"]}}
+{"src":"arn:aws:iam::222222222222:role/LambdaExec","dst":"arn:aws:iam::111111111111:role/AppRole","type":"AttackPath","properties":{"rule":"assume-role-chain","description":"Lambda to AppRole","severity":"high","path":["arn:aws:iam::222222222222:role/LambdaExec","arn:aws:iam::111111111111:role/AppRole"]}}
+{"src":"loggroup:/aws/lambda/process","dst":"arn:aws:iam::222222222222:role/LambdaExec","type":"AttackPath","properties":{"rule":"log-access","description":"Logs access via Lambda role","severity":"low"}}
+{"src":"arn:aws:wafv2:us-east-1:222222222222:global/webacl/prod/123","dst":"internet","type":"AttackPath","properties":{"rule":"waf-scope","description":"Review WAF scope","severity":"low"}}

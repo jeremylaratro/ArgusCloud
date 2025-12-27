@@ -1,0 +1,4 @@
+{"src": "arn:aws:iam::123456789012:role/app", "dst": "arn:aws:iam::123456789012:user/alice", "type": "Trusts", "properties": {"source": "iam:AssumeRolePolicyDocument"}}
+{"src": "arn:aws:iam::123456789012:role/admin", "dst": "arn:aws:iam::123456789012:role/app", "type": "Trusts", "properties": {"source": "iam:AssumeRolePolicyDocument"}}
+{"src": "arn:aws:s3:::public-bucket:policy", "dst": "internet", "type": "AttackPath", "properties": {"rule": "public-s3", "description": "S3/KMS resource policy allows everyone", "severity": "high"}}
+{"src": "arn:aws:iam::123456789012:user/alice", "dst": "arn:aws:iam::123456789012:role/admin", "type": "AttackPath", "properties": {"rule": "assume-role-chain", "description": "Principal can reach admin role via trust chain", "severity": "high", "path": ["arn:aws:iam::123456789012:user/alice", "arn:aws:iam::123456789012:role/app", "arn:aws:iam::123456789012:role/admin"]}}
