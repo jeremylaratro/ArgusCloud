@@ -1,7 +1,7 @@
-# awshound Overview
+# CloudHound Overview
 
 ## Product Vision
-BloodHound-style graph analytics for AWS that ingests org- and account-level data, models trust and permission relationships, visualizes attack/defense paths, and produces actionable reports for red, purple, and blue teams.
+BloodHound-style graph analytics for cloud environments (AWS, GCP, Azure) that ingests org- and account-level data, models trust and permission relationships, visualizes attack/defense paths, and produces actionable reports for red, purple, and blue teams.
 
 ## Personas
 - Red team/RT operators: black-box and assumed-breach scenarios; need stealth, evasion tips, and attack path suggestions.

@@ -11,16 +11,18 @@ import hashlib
 import hmac
 import os
 import secrets
-import time
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any, Callable, Dict, Optional, Tuple
 
+import jwt
 from flask import request, jsonify, g, current_app
 
 
 # Default settings
 DEFAULT_API_KEY_LENGTH = 32
 DEFAULT_JWT_EXPIRY = 3600  # 1 hour
+JWT_ALGORITHM = "HS256"
 
 
 def generate_api_key(prefix: str = "ch") -> Tuple[str, str]:
@@ -46,71 +48,51 @@ def create_jwt_token(
     secret: str,
     expiry_seconds: int = DEFAULT_JWT_EXPIRY
 ) -> str:
-    """Create a simple JWT-like token.
+    """Create a JWT token using PyJWT library.
 
-    For production, use a proper JWT library like PyJWT.
-    This is a lightweight implementation for basic use cases.
+    Args:
+        payload: Data to encode in the token
+        secret: Secret key for signing
+        expiry_seconds: Token expiry time in seconds
+
+    Returns:
+        Encoded JWT token string
     """
-    import base64
-    import json
+    # Create a copy to avoid modifying the original
+    token_payload = payload.copy()
 
-    header = {"alg": "HS256", "typ": "JWT"}
+    # Add standard JWT claims
+    now = datetime.now(timezone.utc)
+    token_payload["exp"] = now + timedelta(seconds=expiry_seconds)
+    token_payload["iat"] = now
 
-    # Add expiry
-    payload = payload.copy()
-    payload["exp"] = int(time.time()) + expiry_seconds
-    payload["iat"] = int(time.time())
-
-    # Encode header and payload
-    header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
-    payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
-
-    # Create signature
-    message = f"{header_b64}.{payload_b64}"
-    signature = hmac.new(secret.encode(), message.encode(), hashlib.sha256).digest()
-    signature_b64 = base64.urlsafe_b64encode(signature).decode().rstrip("=")
-
-    return f"{header_b64}.{payload_b64}.{signature_b64}"
+    return jwt.encode(token_payload, secret, algorithm=JWT_ALGORITHM)
 
 
 def verify_jwt_token(token: str, secret: str) -> Optional[Dict[str, Any]]:
-    """Verify and decode a JWT token.
+    """Verify and decode a JWT token using PyJWT library.
+
+    Args:
+        token: JWT token string to verify
+        secret: Secret key used for signing
 
     Returns:
         Decoded payload if valid, None if invalid
     """
-    import base64
-    import json
-
     try:
-        parts = token.split(".")
-        if len(parts) != 3:
-            return None
-
-        header_b64, payload_b64, signature_b64 = parts
-
-        # Verify signature
-        message = f"{header_b64}.{payload_b64}"
-        expected_sig = hmac.new(secret.encode(), message.encode(), hashlib.sha256).digest()
-
-        # Pad base64 string
-        sig_padded = signature_b64 + "=" * (4 - len(signature_b64) % 4)
-        actual_sig = base64.urlsafe_b64decode(sig_padded)
-
-        if not hmac.compare_digest(expected_sig, actual_sig):
-            return None
-
-        # Decode payload
-        payload_padded = payload_b64 + "=" * (4 - len(payload_b64) % 4)
-        payload = json.loads(base64.urlsafe_b64decode(payload_padded))
-
-        # Check expiry
-        if payload.get("exp", 0) < time.time():
-            return None
-
+        # PyJWT handles signature verification, expiry checking, and decoding
+        payload = jwt.decode(
+            token,
+            secret,
+            algorithms=[JWT_ALGORITHM],
+            options={"require": ["exp", "iat"]}
+        )
         return payload
-
-    except Exception:
+    except jwt.ExpiredSignatureError:
+        # Token has expired
+        return None
+    except jwt.InvalidTokenError:
+        # Invalid token (bad signature, malformed, etc.)
         return None
 
 

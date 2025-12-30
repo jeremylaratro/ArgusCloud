@@ -11,3 +11,7 @@ __pycache__/
 *.bak
 *.swp
 .DS_Store
+.cred
+.neo4j_password
+.pids/
+.logs/

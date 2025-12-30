@@ -86,6 +86,7 @@ class Edge:
 @dataclass
 class AttackPath(Edge):
     """Specialized edge representing a security finding."""
+    type: str = "AttackPath"
     rule_id: str = ""
     severity: Severity = Severity.INFO
     description: str = ""

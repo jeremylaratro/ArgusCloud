@@ -256,7 +256,7 @@ def cmd_collect(args: argparse.Namespace) -> int:
 
         session, caller = auth.resolve_session(profile=args.profile, region=args.region)
         manifest = Manifest.new(
-            mode=RunMode(args.mode.upper()) if hasattr(RunMode, args.mode.upper()) else RunMode.FAST,
+            mode=RunMode(args.mode.lower()),
             caller_arn=caller.arn,
             account_id=caller.account,
             partition=caller.partition,
@@ -327,7 +327,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     """Execute the analyze command."""
     from awshound import rules
     from awshound.bundle import write_jsonl
-    from awshound.normalize import Node, Edge
+    from cloudhound.core.graph import Node, Edge
 
     input_dir = Path(args.input)
 
@@ -460,6 +460,19 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def flatten_props(props: dict) -> dict:
+    """Flatten nested objects to JSON strings for Neo4j compatibility."""
+    flat = {}
+    for k, v in props.items():
+        if isinstance(v, (dict, list)):
+            flat[k] = json.dumps(v)
+        elif v is None:
+            flat[k] = ""
+        else:
+            flat[k] = v
+    return flat
+
+
 def cmd_import(args: argparse.Namespace) -> int:
     """Execute the import command."""
     from neo4j import GraphDatabase
@@ -482,6 +495,9 @@ def cmd_import(args: argparse.Namespace) -> int:
         auth=(args.neo4j_user, args.neo4j_password)
     )
 
+    node_count = 0
+    edge_count = 0
+
     with driver.session() as session:
         if args.clear:
             print("Clearing existing data...")
@@ -492,12 +508,15 @@ def cmd_import(args: argparse.Namespace) -> int:
         with nodes_path.open("r", encoding="utf-8") as f:
             for line in f:
                 data = json.loads(line)
+                props = flatten_props(data.get("properties", {}))
+                props["provider"] = data.get("provider", "aws")
                 session.run(
                     "CREATE (n:Resource {id: $id, type: $type}) SET n += $props",
                     id=data["id"],
                     type=data["type"],
-                    props=data.get("properties", {})
+                    props=props
                 )
+                node_count += 1
 
         # Import edges
         print("Importing edges...")
@@ -507,6 +526,7 @@ def cmd_import(args: argparse.Namespace) -> int:
             with path.open("r", encoding="utf-8") as f:
                 for line in f:
                     data = json.loads(line)
+                    props = flatten_props(data.get("properties", {}))
                     session.run(
                         """
                         MATCH (a:Resource {id: $src})
@@ -517,11 +537,12 @@ def cmd_import(args: argparse.Namespace) -> int:
                         src=data["src"],
                         dst=data["dst"],
                         type=data["type"],
-                        props=data.get("properties", {})
+                        props=props
                     )
+                    edge_count += 1
 
     driver.close()
-    print("Import complete!")
+    print(f"Import complete! {node_count} nodes, {edge_count} edges")
     return 0
 
 

@@ -1,4 +1,4 @@
-# awshound Progress Tracker
+# CloudHound Progress Tracker
 
 | Step | Description | Status | Notes |
 | --- | --- | --- | --- |

@@ -1,0 +1,53 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SecurityAndMonitoring",
+      "Effect": "Allow",
+      "Action": [
+        "kms:ListKeys",
+        "kms:DescribeKey",
+        "kms:GetKeyPolicy",
+        "kms:GetKeyRotationStatus",
+        "kms:ListGrants",
+        "secretsmanager:ListSecrets",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetResourcePolicy",
+        "ssm:DescribeParameters",
+        "ssm:GetParameters",
+        "sns:ListTopics",
+        "sns:GetTopicAttributes",
+        "sns:ListSubscriptionsByTopic",
+        "sqs:ListQueues",
+        "sqs:GetQueueAttributes",
+        "cloudtrail:DescribeTrails",
+        "cloudtrail:GetTrailStatus",
+        "cloudtrail:GetEventSelectors",
+        "guardduty:ListDetectors",
+        "guardduty:GetDetector",
+        "guardduty:GetFindingsStatistics",
+        "securityhub:DescribeHub",
+        "securityhub:GetFindings",
+        "securityhub:GetEnabledStandards",
+        "detective:ListGraphs",
+        "config:DescribeConfigurationRecorders",
+        "config:DescribeConfigurationRecorderStatus",
+        "config:DescribeConformancePacks",
+        "wafv2:ListWebACLs",
+        "wafv2:GetWebACL",
+        "shield:GetSubscriptionState",
+        "shield:ListProtections",
+        "fms:GetAdminAccount",
+        "fms:ListPolicies",
+        "codebuild:ListProjects",
+        "codebuild:BatchGetProjects",
+        "codepipeline:ListPipelines",
+        "codepipeline:GetPipelineState",
+        "cloudformation:ListStacks",
+        "cloudformation:DescribeStacks",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

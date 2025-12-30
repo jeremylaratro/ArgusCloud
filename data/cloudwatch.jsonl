@@ -1,0 +1,1 @@
+{"LogGroups": [{"logGroupName": "/ch-test/test-logs", "creationTime": 1766964408682, "metricFilterCount": 0, "arn": "arn:aws:logs:us-east-1:180294212498:log-group:/ch-test/test-logs:*", "storedBytes": 0, "logGroupClass": "STANDARD", "logGroupArn": "arn:aws:logs:us-east-1:180294212498:log-group:/ch-test/test-logs", "deletionProtectionEnabled": false}]}

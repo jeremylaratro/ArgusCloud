@@ -1,0 +1,237 @@
+{
+  "run_id": "4af434e4-fde3-4d60-90fe-cb25666c289e",
+  "mode": "fast",
+  "caller_arn": "arn:aws:iam::180294212498:user/cloudhound_tester",
+  "account_id": "180294212498",
+  "partition": "aws",
+  "region": "us-east-1",
+  "profile": "default",
+  "services": [
+    {
+      "name": "sts",
+      "status": "ok",
+      "detail": "sts-get-caller-identity",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "org",
+      "status": "ok",
+      "detail": "not-in-org",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "iam",
+      "status": "ok",
+      "detail": "iam-summary",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "iam-roles",
+      "status": "ok",
+      "detail": "iam-roles",
+      "collected_resources": 22,
+      "errors": []
+    },
+    {
+      "name": "iam-users",
+      "status": "ok",
+      "detail": "iam-users",
+      "collected_resources": 3,
+      "errors": []
+    },
+    {
+      "name": "iam-policies",
+      "status": "ok",
+      "detail": "iam-policies",
+      "collected_resources": 12,
+      "errors": []
+    },
+    {
+      "name": "cloudtrail",
+      "status": "ok",
+      "detail": "cloudtrail",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "guardduty",
+      "status": "ok",
+      "detail": "guardduty",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "s3",
+      "status": "ok",
+      "detail": "s3",
+      "collected_resources": 4,
+      "errors": []
+    },
+    {
+      "name": "kms",
+      "status": "ok",
+      "detail": "kms",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "vpc",
+      "status": "ok",
+      "detail": "vpc",
+      "collected_resources": 5,
+      "errors": []
+    },
+    {
+      "name": "ec2",
+      "status": "ok",
+      "detail": "ec2",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "ec2-images",
+      "status": "ok",
+      "detail": "ec2-images",
+      "collected_resources": 2,
+      "errors": []
+    },
+    {
+      "name": "eks",
+      "status": "ok",
+      "detail": "eks",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "ecr",
+      "status": "ok",
+      "detail": "ecr",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "lambda",
+      "status": "ok",
+      "detail": "lambda",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "cloudformation",
+      "status": "ok",
+      "detail": "cloudformation",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "codebuild",
+      "status": "ok",
+      "detail": "codebuild",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "secretsmanager",
+      "status": "ok",
+      "detail": "secretsmanager",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "ssm-parameters",
+      "status": "ok",
+      "detail": "ssm-parameters",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "sns",
+      "status": "ok",
+      "detail": "sns",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "sqs",
+      "status": "ok",
+      "detail": "sqs",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "securityhub",
+      "status": "ok",
+      "detail": "securityhub",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "detective",
+      "status": "ok",
+      "detail": "detective",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "config",
+      "status": "ok",
+      "detail": "config",
+      "collected_resources": 2,
+      "errors": []
+    },
+    {
+      "name": "sso",
+      "status": "ok",
+      "detail": "sso",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "rds",
+      "status": "ok",
+      "detail": "rds",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "codepipeline",
+      "status": "ok",
+      "detail": "codepipeline",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "cloudwatch",
+      "status": "ok",
+      "detail": "cloudwatch",
+      "collected_resources": 1,
+      "errors": []
+    },
+    {
+      "name": "waf",
+      "status": "ok",
+      "detail": "waf",
+      "collected_resources": 2,
+      "errors": []
+    },
+    {
+      "name": "shield",
+      "status": "ok",
+      "detail": "shield",
+      "collected_resources": 0,
+      "errors": []
+    },
+    {
+      "name": "fms",
+      "status": "ok",
+      "detail": "fms",
+      "collected_resources": 0,
+      "errors": []
+    }
+  ],
+  "schema_version": "0.1.0",
+  "notes": null
+}

@@ -1,4 +1,4 @@
-# AWSHound Current Status
+# CloudHound Current Status
 
 ## Completed
 - Scope/personas/objectives defined (`docs/overview.md`).

@@ -1,0 +1,5 @@
+{"src": "arn:aws:s3:::ch-test-public-180294212498:policy", "dst": "internet", "type": "AttackPath", "properties": {"rule": "public-s3", "description": "S3/KMS resource policy allows everyone", "severity": "high"}}
+{"src": "arn:aws:lambda:us-east-1:180294212498:function:ch-test-function:policy", "dst": "internet", "type": "AttackPath", "properties": {"rule": "public-s3", "description": "S3/KMS resource policy allows everyone", "severity": "high"}}
+{"src": "sg-0b02068cd8c01fb3e", "dst": "internet", "type": "AttackPath", "properties": {"rule": "open-sg", "description": "Security group allows ingress from 0.0.0.0/0", "severity": "medium"}}
+{"src": "arn:aws:kms:us-east-1:180294212498:key/a6decb6d-da74-4ad5-9c98-88629b62df10:policy", "dst": "arn:aws:iam::180294212498:root", "type": "AttackPath", "properties": {"rule": "kms-cross-account", "description": "KMS key policy trusts external account principal", "severity": "medium"}}
+{"src": "i-0eedbbc1d42895bf5", "dst": "imds:cred-theft", "type": "AttackPath", "properties": {"rule": "imds-exposure", "description": "Public instance with role attached (IMDS credential theft risk)", "severity": "medium"}}
