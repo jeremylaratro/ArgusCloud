@@ -1,4 +1,4 @@
-# CloudHound Domain Model & Architecture
+# ArgusCloud Domain Model & Architecture
 
 ## Graph Schema (Nodes)
 - `OrgRoot`, `OrgUnit`, `Account`: org structure; include SCP links and delegated admins.

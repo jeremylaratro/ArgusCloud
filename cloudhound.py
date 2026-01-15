@@ -7,7 +7,7 @@ from pathlib import Path
 # Add the project root to path so imports work
 sys.path.insert(0, str(Path(__file__).parent))
 
-from cloudhound.cli.main import main
+from arguscloud.cli.main import main
 
 if __name__ == "__main__":
     main()

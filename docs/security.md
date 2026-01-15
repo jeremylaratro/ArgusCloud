@@ -1,6 +1,6 @@
-# CloudHound Security Guide
+# ArgusCloud Security Guide
 
-This guide covers security best practices for deploying and operating CloudHound.
+This guide covers security best practices for deploying and operating ArgusCloud.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This guide covers security best practices for deploying and operating CloudHound
 
 ### AWS Credentials
 
-CloudHound requires AWS credentials to collect cloud resource data. Follow these best practices:
+ArgusCloud requires AWS credentials to collect cloud resource data. Follow these best practices:
 
 #### Never Store Credentials in Code
 
@@ -37,8 +37,8 @@ Prefer temporary credentials (STS) over long-term access keys:
 ```bash
 # Get temporary credentials
 aws sts assume-role \
-  --role-arn arn:aws:iam::123456789012:role/CloudHoundCollector \
-  --role-session-name cloudhound-collection
+  --role-arn arn:aws:iam::123456789012:role/ArgusCloudCollector \
+  --role-session-name arguscloud-collection
 ```
 
 #### Credential Lifecycle
@@ -50,8 +50,8 @@ aws sts assume-role \
 
 ### API Keys
 
-CloudHound API keys should be:
-- Generated using `cloudhound auth generate-key`
+ArgusCloud API keys should be:
+- Generated using `arguscloud auth generate-key`
 - Stored securely (secrets manager, vault)
 - Rotated regularly
 - Scoped to minimum required permissions
@@ -60,14 +60,14 @@ CloudHound API keys should be:
 
 ### Minimum Read-Only Policy
 
-Use this policy for CloudHound collection:
+Use this policy for ArgusCloud collection:
 
 ```json
 {
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "CloudHoundReadOnly",
+            "Sid": "ArgusCloudReadOnly",
             "Effect": "Allow",
             "Action": [
                 "iam:Get*",
@@ -133,7 +133,7 @@ For multi-account environments, create a role in each target account:
         {
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::MANAGEMENT_ACCOUNT:role/CloudHoundCollector"
+                "AWS": "arn:aws:iam::MANAGEMENT_ACCOUNT:role/ArgusCloudCollector"
             },
             "Action": "sts:AssumeRole",
             "Condition": {
@@ -228,9 +228,9 @@ dbms.directories.data=/encrypted-volume/data
 Create dedicated users with minimal permissions:
 
 ```cypher
-// Create read-only user for CloudHound
-CREATE USER cloudhound SET PASSWORD 'secure_password' SET PASSWORD CHANGE NOT REQUIRED;
-GRANT ROLE reader TO cloudhound;
+// Create read-only user for ArgusCloud
+CREATE USER arguscloud SET PASSWORD 'secure_password' SET PASSWORD CHANGE NOT REQUIRED;
+GRANT ROLE reader TO arguscloud;
 
 // Create admin user for management
 CREATE USER admin SET PASSWORD 'admin_password' SET PASSWORD CHANGE NOT REQUIRED;
@@ -241,7 +241,7 @@ GRANT ROLE admin TO admin;
 
 ### JWT Tokens
 
-CloudHound uses JWT tokens for API authentication:
+ArgusCloud uses JWT tokens for API authentication:
 
 - **Algorithm:** HS256
 - **Expiry:** Configurable (default 1 hour)
@@ -249,7 +249,7 @@ CloudHound uses JWT tokens for API authentication:
 
 ```bash
 # Set a strong JWT secret (min 32 characters)
-export CLOUDHOUND_JWT_SECRET="your-very-long-and-secure-secret-key-here"
+export ARGUSCLOUD_JWT_SECRET="your-very-long-and-secure-secret-key-here"
 ```
 
 ### API Key Authentication
@@ -265,17 +265,17 @@ Configure specific origins (never use `*` in production):
 
 ```bash
 # Single origin
-CLOUDHOUND_CORS_ORIGINS=https://cloudhound.example.com
+ARGUSCLOUD_CORS_ORIGINS=https://arguscloud.example.com
 
 # Multiple origins
-CLOUDHOUND_CORS_ORIGINS=https://cloudhound.example.com,https://admin.example.com
+ARGUSCLOUD_CORS_ORIGINS=https://arguscloud.example.com,https://admin.example.com
 ```
 
 ## Data Protection
 
 ### Query Validation
 
-CloudHound implements whitelist-based Cypher query validation:
+ArgusCloud implements whitelist-based Cypher query validation:
 
 **Allowed:**
 - `MATCH ... RETURN ...` (read queries)
@@ -312,7 +312,7 @@ DETACH DELETE n
 ### Enable Logging
 
 ```bash
-CLOUDHOUND_LOG_LEVEL=INFO
+ARGUSCLOUD_LOG_LEVEL=INFO
 ```
 
 ### Security Events Logged
@@ -365,13 +365,13 @@ Establish security contact procedures:
 
 ```bash
 # Revoke all API keys (emergency)
-cloudhound auth revoke-all
+arguscloud auth revoke-all
 
 # Disable API authentication temporarily
-CLOUDHOUND_AUTH_ENABLED=false cloudhound serve
+ARGUSCLOUD_AUTH_ENABLED=false arguscloud serve
 
 # Force JWT secret rotation (invalidates all tokens)
-export CLOUDHOUND_JWT_SECRET="new-secret-key"
+export ARGUSCLOUD_JWT_SECRET="new-secret-key"
 ```
 
 ### Vulnerability Reporting
@@ -391,7 +391,7 @@ Use this checklist for production deployments:
 - [ ] Network segmentation in place
 
 ### Authentication
-- [ ] `CLOUDHOUND_AUTH_ENABLED=true`
+- [ ] `ARGUSCLOUD_AUTH_ENABLED=true`
 - [ ] Strong JWT secret (32+ chars)
 - [ ] API keys rotated regularly
 - [ ] CORS origins configured

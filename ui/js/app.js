@@ -23,7 +23,7 @@
       mitreTactics: []
     };
 
-    let savedFilters = JSON.parse(localStorage.getItem('cloudhound_saved_filters') || '[]');
+    let savedFilters = JSON.parse(localStorage.getItem('arguscloud_saved_filters') || '[]');
     let availableTypes = [];
     let availableRegions = [];
     let availableEdgeTypes = [];
@@ -2112,7 +2112,7 @@
       };
 
       savedFilters.push(filter);
-      localStorage.setItem('cloudhound_saved_filters', JSON.stringify(savedFilters));
+      localStorage.setItem('arguscloud_saved_filters', JSON.stringify(savedFilters));
       renderSavedFilters();
       showMessage(`Filter "${name}" saved`, 'success');
     }
@@ -2157,7 +2157,7 @@
           e.stopPropagation();
           const id = btn.dataset.id;
           savedFilters = savedFilters.filter(f => f.id !== id);
-          localStorage.setItem('cloudhound_saved_filters', JSON.stringify(savedFilters));
+          localStorage.setItem('arguscloud_saved_filters', JSON.stringify(savedFilters));
           renderSavedFilters();
         });
       });
@@ -2354,7 +2354,7 @@
         nodes = [];
         edges = [];
         currentProfile = null;
-        localStorage.removeItem('cloudhound_last_profile');
+        localStorage.removeItem('arguscloud_last_profile');
         if (cy) {
           cy.destroy();
           cy = null;
@@ -2377,7 +2377,7 @@
         currentProfile = name;
 
         // Save as last used profile
-        localStorage.setItem('cloudhound_last_profile', name);
+        localStorage.setItem('arguscloud_last_profile', name);
 
         // Update available filter options from loaded data
         updateAvailableFilterOptions();
@@ -2442,7 +2442,7 @@
         }
 
         currentProfile = name;
-        localStorage.setItem('cloudhound_last_profile', name);
+        localStorage.setItem('arguscloud_last_profile', name);
         await loadProfiles();
         document.getElementById('profileSelect').value = name;
 
@@ -2468,7 +2468,7 @@
 
         if (currentProfile === name) {
           currentProfile = null;
-          localStorage.removeItem('cloudhound_last_profile');
+          localStorage.removeItem('arguscloud_last_profile');
         }
 
         await loadProfiles();
@@ -4060,7 +4060,7 @@
         // Update current profile reference
         if (currentProfile === oldName) {
           currentProfile = newName;
-          localStorage.setItem('cloudhound_last_profile', newName);
+          localStorage.setItem('arguscloud_last_profile', newName);
         }
 
         // Reload profiles and update selection
@@ -4807,7 +4807,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `cloudhound-report-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `arguscloud-report-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
     });
@@ -4915,7 +4915,7 @@
       let startWidth = 0;
 
       // Load saved width from localStorage
-      const savedWidth = localStorage.getItem('cloudhound_sidebar_width');
+      const savedWidth = localStorage.getItem('arguscloud_sidebar_width');
       if (savedWidth) {
         const width = parseInt(savedWidth, 10);
         if (width >= 260 && width <= 600) {
@@ -4958,7 +4958,7 @@
           resizeHandle.classList.remove('dragging');
 
           // Save width to localStorage
-          localStorage.setItem('cloudhound_sidebar_width', sidebar.offsetWidth.toString());
+          localStorage.setItem('arguscloud_sidebar_width', sidebar.offsetWidth.toString());
         }
       });
 
@@ -4966,7 +4966,7 @@
       resizeHandle.addEventListener('dblclick', () => {
         sidebar.style.width = '280px';
         layout.style.gridTemplateColumns = '280px 1fr';
-        localStorage.removeItem('cloudhound_sidebar_width');
+        localStorage.removeItem('arguscloud_sidebar_width');
         if (cy) cy.resize();
       });
     }
@@ -4997,7 +4997,7 @@
       await loadProfiles();
 
       // Auto-load last used profile
-      const lastProfile = localStorage.getItem('cloudhound_last_profile');
+      const lastProfile = localStorage.getItem('arguscloud_last_profile');
       if (lastProfile && profiles.some(p => p.name === lastProfile)) {
         document.getElementById('profileSelect').value = lastProfile;
         await loadProfile(lastProfile);

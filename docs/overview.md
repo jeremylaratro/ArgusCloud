@@ -1,4 +1,4 @@
-# CloudHound Overview
+# ArgusCloud Overview
 
 ## Product Vision
 BloodHound-style graph analytics for cloud environments (AWS, GCP, Azure) that ingests org- and account-level data, models trust and permission relationships, visualizes attack/defense paths, and produces actionable reports for red, purple, and blue teams.

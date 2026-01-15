@@ -1,4 +1,4 @@
-# CloudHound Test Coverage Plan
+# ArgusCloud Test Coverage Plan
 
 ## Current State
 - **Total Tests:** 266 (all passing)
@@ -11,7 +11,7 @@
 
 ### 1.1 Lambda Normalizer Tests
 **File:** `tests/test_normalizers_lambda.py`
-**Source:** `cloudhound/normalizers/aws/compute.py`
+**Source:** `arguscloud/normalizers/aws/compute.py`
 
 Tests needed:
 - [ ] Empty records handling
@@ -25,7 +25,7 @@ Tests needed:
 
 ### 1.2 VPC Normalizer Tests
 **File:** `tests/test_normalizers_vpc.py`
-**Source:** `cloudhound/normalizers/aws/ec2.py`
+**Source:** `arguscloud/normalizers/aws/ec2.py`
 
 Tests needed:
 - [ ] Empty records handling
@@ -39,7 +39,7 @@ Tests needed:
 
 ### 1.3 CloudTrail Normalizer Tests
 **File:** `tests/test_normalizers_cloudtrail.py`
-**Source:** `cloudhound/normalizers/aws/security.py`
+**Source:** `arguscloud/normalizers/aws/security.py`
 
 Tests needed:
 - [ ] Empty records handling
@@ -52,7 +52,7 @@ Tests needed:
 
 ### 1.4 GuardDuty Normalizer Tests
 **File:** `tests/test_normalizers_guardduty.py`
-**Source:** `cloudhound/normalizers/aws/security.py`
+**Source:** `arguscloud/normalizers/aws/security.py`
 
 Tests needed:
 - [ ] Empty records handling
@@ -63,7 +63,7 @@ Tests needed:
 
 ### 1.5 Organizations Normalizer Tests
 **File:** `tests/test_normalizers_org.py`
-**Source:** `cloudhound/normalizers/aws/org.py`
+**Source:** `arguscloud/normalizers/aws/org.py`
 
 Tests needed:
 - [ ] Empty records handling
@@ -219,7 +219,7 @@ pytest-cov>=4.0.0
 pytest tests/ -v
 
 # Run with coverage
-pytest tests/ --cov=cloudhound --cov-report=html
+pytest tests/ --cov=arguscloud --cov-report=html
 
 # Run specific phase
 pytest tests/test_normalizers_*.py -v

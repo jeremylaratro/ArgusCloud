@@ -1,6 +1,6 @@
-# Contributing to CloudHound
+# Contributing to ArgusCloud
 
-Thank you for your interest in contributing to CloudHound! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to ArgusCloud! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -23,8 +23,8 @@ Thank you for your interest in contributing to CloudHound! This document provide
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/jeremylaratro/cloudhound.git
-   cd cloudhound
+   git clone https://github.com/jeremylaratro/arguscloud.git
+   cd arguscloud
    ```
 
 2. **Create a virtual environment:**
@@ -59,11 +59,11 @@ Thank you for your interest in contributing to CloudHound! This document provide
 Create a `.env` file for local development:
 
 ```bash
-CLOUDHOUND_NEO4J_URI=bolt://localhost:7687
-CLOUDHOUND_NEO4J_USER=neo4j
-CLOUDHOUND_NEO4J_PASSWORD=password
-CLOUDHOUND_AUTH_ENABLED=false
-CLOUDHOUND_LOG_LEVEL=DEBUG
+ARGUSCLOUD_NEO4J_URI=bolt://localhost:7687
+ARGUSCLOUD_NEO4J_USER=neo4j
+ARGUSCLOUD_NEO4J_PASSWORD=password
+ARGUSCLOUD_AUTH_ENABLED=false
+ARGUSCLOUD_LOG_LEVEL=DEBUG
 ```
 
 ## Code Style
@@ -72,21 +72,21 @@ CLOUDHOUND_LOG_LEVEL=DEBUG
 
 We use the following tools to maintain code quality:
 
-- **Ruff** for linting: `ruff check cloudhound/`
-- **Black** for formatting: `black cloudhound/`
-- **isort** for import sorting: `isort cloudhound/`
+- **Ruff** for linting: `ruff check arguscloud/`
+- **Black** for formatting: `black arguscloud/`
+- **isort** for import sorting: `isort arguscloud/`
 
 Run all checks before committing:
 ```bash
-ruff check cloudhound/ tests/
-black --check cloudhound/ tests/
+ruff check arguscloud/ tests/
+black --check arguscloud/ tests/
 ```
 
 ### Type Hints
 
 - Type hints are **required** for all public functions and methods
 - Use `typing` module for complex types
-- Run `mypy cloudhound/` to check type correctness
+- Run `mypy arguscloud/` to check type correctness
 
 ```python
 # Good
@@ -122,7 +122,7 @@ def collect_iam_roles(session: boto3.Session) -> Tuple[str, List[Dict]]:
 
 - Keep functions focused and under 50 lines when possible
 - Use meaningful variable names
-- Avoid magic numbers - use constants from `cloudhound/constants.py`
+- Avoid magic numbers - use constants from `arguscloud/constants.py`
 - Handle errors explicitly - no bare `except:` clauses
 
 ## Testing Requirements
@@ -134,7 +134,7 @@ def collect_iam_roles(session: boto3.Session) -> Tuple[str, List[Dict]]:
 pytest
 
 # Run with coverage
-pytest --cov=cloudhound --cov-report=html
+pytest --cov=arguscloud --cov-report=html
 
 # Run specific test file
 pytest tests/test_api_server.py
@@ -150,7 +150,7 @@ pytest -k "test_health"
    - Integration tests for API endpoints
 
 2. **Maintain >80% code coverage**
-   - Check coverage: `pytest --cov=cloudhound`
+   - Check coverage: `pytest --cov=arguscloud`
 
 3. **Test naming convention:**
    ```python
@@ -205,8 +205,8 @@ tests/
 
 4. **Run linting:**
    ```bash
-   ruff check cloudhound/ tests/
-   black --check cloudhound/ tests/
+   ruff check arguscloud/ tests/
+   black --check arguscloud/ tests/
    ```
 
 5. **Update documentation if needed**
@@ -273,7 +273,7 @@ test(api): add integration tests for profile endpoints
 ### Bug Reports
 
 Include:
-- CloudHound version
+- ArgusCloud version
 - Python version
 - Operating system
 - Steps to reproduce
@@ -294,10 +294,10 @@ See [SECURITY.md](SECURITY.md) for reporting instructions.
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/jeremylaratro/cloudhound/discussions) for questions
+- Open a [Discussion](https://github.com/jeremylaratro/arguscloud/discussions) for questions
 - Check existing issues before creating new ones
 - Join our community chat (if available)
 
 ---
 
-Thank you for contributing to CloudHound!
+Thank you for contributing to ArgusCloud!

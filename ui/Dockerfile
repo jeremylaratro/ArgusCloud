@@ -1,4 +1,4 @@
-# CloudHound UI Dockerfile
+# ArgusCloud UI Dockerfile
 # Serves the static web UI via nginx
 
 # =============================================================================
@@ -22,10 +22,10 @@ RUN rm -f *.jsonl sample_*.jsonl 2>/dev/null || true
 FROM nginx:1.25-alpine AS runtime
 
 # Labels for container metadata
-LABEL org.opencontainers.image.title="CloudHound UI" \
-      org.opencontainers.image.description="CloudHound web interface for cloud security visualization" \
+LABEL org.opencontainers.image.title="ArgusCloud UI" \
+      org.opencontainers.image.description="ArgusCloud web interface for cloud security visualization" \
       org.opencontainers.image.version="0.3.0" \
-      org.opencontainers.image.vendor="CloudHound" \
+      org.opencontainers.image.vendor="ArgusCloud" \
       org.opencontainers.image.source="https://github.com/jeremylaratro/cloudhound"
 
 # Remove default nginx config and content

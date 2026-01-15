@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# CloudHound Startup Script
+# ArgusCloud Startup Script
 # Usage: ./start.sh [dev|prod]
 #
 set -e
@@ -29,18 +29,14 @@ DEFAULT_LOG_LEVEL="DEBUG"
 
 print_banner() {
     echo -e "${CYAN}"
-    echo "╔═══════════════════════════════════════════════════════════════════╗"
-    echo "║                                                                   ║"
-    echo "║   ██████╗██╗      ██████╗ ██╗   ██╗██████╗ ██╗  ██╗ ██████╗      ║"
-    echo "║  ██╔════╝██║     ██╔═══██╗██║   ██║██╔══██╗██║  ██║██╔═══██╗     ║"
-    echo "║  ██║     ██║     ██║   ██║██║   ██║██║  ██║███████║██║   ██║     ║"
-    echo "║  ██║     ██║     ██║   ██║██║   ██║██║  ██║██╔══██║██║   ██║     ║"
-    echo "║  ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝██║  ██║╚██████╔╝     ║"
-    echo "║   ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝     ║"
-    echo "║                                                                   ║"
-    echo "║          Cloud Security Graph Analytics Platform                  ║"
-    echo "║                                                                   ║"
-    echo "╚═══════════════════════════════════════════════════════════════════╝"
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║                                                            ║"
+    echo "║     ▄▀█ █▀█ █▀▀ █ █ █▀   █▀▀ █   █▀█ █ █ █▀▄              ║"
+    echo "║     █▀█ █▀▄ █▄█ █▄█ ▄█   █▄▄ █▄▄ █▄█ █▄█ █▄▀              ║"
+    echo "║                                                            ║"
+    echo "║        Cloud Security Graph Analytics Platform             ║"
+    echo "║                                                            ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
 }
 
@@ -224,7 +220,7 @@ wait_for_services() {
     # Wait for Neo4j
     echo -n "  Neo4j: "
     while [ $attempt -le $max_attempts ]; do
-        if docker exec cloudhound-neo4j wget -q --spider http://localhost:7474 2>/dev/null; then
+        if docker exec arguscloud-neo4j wget -q --spider http://localhost:7474 2>/dev/null; then
             echo -e "${GREEN}Ready${NC}"
             break
         fi
@@ -277,8 +273,8 @@ show_access_info() {
 
     print_section "Access Information"
 
-    echo -e "  ${BOLD}CloudHound UI:${NC}      ${GREEN}http://localhost:8080${NC}"
-    echo -e "  ${BOLD}CloudHound API:${NC}     ${GREEN}http://localhost:9847${NC}"
+    echo -e "  ${BOLD}ArgusCloud UI:${NC}      ${GREEN}http://localhost:8080${NC}"
+    echo -e "  ${BOLD}ArgusCloud API:${NC}     ${GREEN}http://localhost:9847${NC}"
     echo -e "  ${BOLD}API Health Check:${NC}   ${GREEN}http://localhost:9847/health${NC}"
 
     if [ "$mode" == "dev" ]; then
@@ -299,7 +295,7 @@ show_next_steps() {
 
     echo -e "  ${BOLD}2. Collect AWS Data:${NC}"
     echo -e "     Using the CLI:"
-    echo -e "     ${CYAN}cloudhound collect --profile your-aws-profile${NC}"
+    echo -e "     ${CYAN}arguscloud collect --profile your-aws-profile${NC}"
     echo ""
     echo -e "     Or via the UI:"
     echo -e "     Go to Data Management → Enter AWS credentials"
@@ -345,7 +341,7 @@ show_documentation() {
 }
 
 show_help() {
-    echo "CloudHound Startup Script"
+    echo "ArgusCloud Startup Script"
     echo ""
     echo "Usage: $0 [OPTIONS] [MODE]"
     echo ""
@@ -457,7 +453,7 @@ main() {
     show_next_steps "$mode"
     show_documentation
 
-    echo -e "${GREEN}${BOLD}CloudHound is ready!${NC}"
+    echo -e "${GREEN}${BOLD}ArgusCloud is ready!${NC}"
     echo ""
 }
 

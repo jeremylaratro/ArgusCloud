@@ -1,6 +1,6 @@
 # Archived Documentation
 
-This directory contains historical documentation from earlier versions of CloudHound that has been superseded by newer documentation or completed work.
+This directory contains historical documentation from earlier versions of ArgusCloud that has been superseded by newer documentation or completed work.
 
 ## Contents
 

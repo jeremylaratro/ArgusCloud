@@ -1,4 +1,4 @@
-# CloudHound Progress Tracker
+# ArgusCloud Progress Tracker
 
 | Step | Description | Status | Notes |
 | --- | --- | --- | --- |

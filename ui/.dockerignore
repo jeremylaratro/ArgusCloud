@@ -1,4 +1,4 @@
-# CloudHound UI Docker Build Ignore File
+# ArgusCloud UI Docker Build Ignore File
 # Excludes files not needed for the UI container
 
 # =============================================================================

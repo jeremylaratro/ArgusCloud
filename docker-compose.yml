@@ -1,4 +1,4 @@
-# CloudHound Development Docker Compose
+# ArgusCloud Development Docker Compose
 # Usage: docker compose up
 #
 # This configuration is optimized for local development with:
@@ -13,7 +13,7 @@ services:
   # ============================================================================
   neo4j:
     image: neo4j:5
-    container_name: cloudhound-neo4j
+    container_name: arguscloud-neo4j
     restart: unless-stopped
     ports:
       - "7474:7474"   # HTTP browser interface
@@ -37,31 +37,31 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - cloudhound
+      - arguscloud
 
   # ============================================================================
-  # CloudHound API Server
+  # ArgusCloud API Server
   # ============================================================================
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cloudhound-api
+    container_name: arguscloud-api
     restart: unless-stopped
     ports:
       - "9847:9847"
     environment:
       # Neo4j connection
-      CLOUDHOUND_NEO4J_URI: bolt://neo4j:7687
-      CLOUDHOUND_NEO4J_USER: ${NEO4J_USER:-neo4j}
-      CLOUDHOUND_NEO4J_PASSWORD: ${NEO4J_PASSWORD:-letmein123}
+      ARGUSCLOUD_NEO4J_URI: bolt://neo4j:7687
+      ARGUSCLOUD_NEO4J_USER: ${NEO4J_USER:-neo4j}
+      ARGUSCLOUD_NEO4J_PASSWORD: ${NEO4J_PASSWORD:-letmein123}
       # Development settings
-      CLOUDHOUND_AUTH_ENABLED: ${AUTH_ENABLED:-false}
-      CLOUDHOUND_LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
-      CLOUDHOUND_CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080,http://localhost:3000}
+      ARGUSCLOUD_AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      ARGUSCLOUD_LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      ARGUSCLOUD_CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080,http://localhost:3000}
       # JWT settings (only needed if auth enabled)
-      CLOUDHOUND_JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
-      CLOUDHOUND_JWT_EXPIRY: ${JWT_EXPIRY:-86400}
+      ARGUSCLOUD_JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+      ARGUSCLOUD_JWT_EXPIRY: ${JWT_EXPIRY:-86400}
     volumes:
       # Mount source code for development (enables hot reload with --reload flag)
       - ./cloudhound:/app/cloudhound:ro
@@ -78,16 +78,16 @@ services:
       retries: 5
       start_period: 20s
     networks:
-      - cloudhound
+      - arguscloud
 
   # ============================================================================
-  # CloudHound UI (Static Web Interface)
+  # ArgusCloud UI (Static Web Interface)
   # ============================================================================
   ui:
     build:
       context: ./ui
       dockerfile: Dockerfile
-    container_name: cloudhound-ui
+    container_name: arguscloud-ui
     restart: unless-stopped
     ports:
       - "8080:80"
@@ -104,7 +104,7 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - cloudhound
+      - arguscloud
 
 # ==============================================================================
 # Volumes
@@ -121,5 +121,5 @@ volumes:
 # Networks
 # ==============================================================================
 networks:
-  cloudhound:
+  arguscloud:
     driver: bridge

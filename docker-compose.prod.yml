@@ -1,4 +1,4 @@
-# CloudHound Production Docker Compose
+# ArgusCloud Production Docker Compose
 # Usage: docker compose -f docker-compose.prod.yml up -d
 #
 # REQUIRED: Create a .env file with at minimum:
@@ -20,7 +20,7 @@ services:
   # ============================================================================
   neo4j:
     image: neo4j:5
-    container_name: cloudhound-neo4j
+    container_name: arguscloud-neo4j
     restart: unless-stopped
     ports:
       - "7687:7687"   # Bolt protocol only (no HTTP browser in prod)
@@ -56,7 +56,7 @@ services:
           cpus: '0.5'
           memory: 1G
     networks:
-      - cloudhound-internal
+      - arguscloud-internal
     logging:
       driver: "json-file"
       options:
@@ -64,32 +64,32 @@ services:
         max-file: "5"
 
   # ============================================================================
-  # CloudHound API Server
+  # ArgusCloud API Server
   # ============================================================================
   api:
-    image: cloudhound-api:${CLOUDHOUND_VERSION:-latest}
+    image: arguscloud-api:${ARGUSCLOUD_VERSION:-latest}
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cloudhound-api
+    container_name: arguscloud-api
     restart: unless-stopped
     ports:
       - "9847:9847"
     environment:
       # Neo4j connection
-      CLOUDHOUND_NEO4J_URI: bolt://neo4j:7687
-      CLOUDHOUND_NEO4J_USER: ${NEO4J_USER:-neo4j}
-      CLOUDHOUND_NEO4J_PASSWORD: ${NEO4J_PASSWORD:?NEO4J_PASSWORD is required}
+      ARGUSCLOUD_NEO4J_URI: bolt://neo4j:7687
+      ARGUSCLOUD_NEO4J_USER: ${NEO4J_USER:-neo4j}
+      ARGUSCLOUD_NEO4J_PASSWORD: ${NEO4J_PASSWORD:?NEO4J_PASSWORD is required}
       # Authentication (REQUIRED in production)
-      CLOUDHOUND_AUTH_ENABLED: "true"
-      CLOUDHOUND_JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required (min 32 chars)}
-      CLOUDHOUND_JWT_EXPIRY: ${JWT_EXPIRY:-3600}
+      ARGUSCLOUD_AUTH_ENABLED: "true"
+      ARGUSCLOUD_JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required (min 32 chars)}
+      ARGUSCLOUD_JWT_EXPIRY: ${JWT_EXPIRY:-3600}
       # CORS - set to your actual UI domain
-      CLOUDHOUND_CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      ARGUSCLOUD_CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
       # Logging
-      CLOUDHOUND_LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      ARGUSCLOUD_LOG_LEVEL: ${LOG_LEVEL:-INFO}
       # Query limits
-      CLOUDHOUND_MAX_QUERY_LIMIT: ${MAX_QUERY_LIMIT:-10000}
+      ARGUSCLOUD_MAX_QUERY_LIMIT: ${MAX_QUERY_LIMIT:-10000}
     volumes:
       - api_data:/app/data
     depends_on:
@@ -116,8 +116,8 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - cloudhound-internal
-      - cloudhound-external
+      - arguscloud-internal
+      - arguscloud-external
     logging:
       driver: "json-file"
       options:
@@ -125,14 +125,14 @@ services:
         max-file: "3"
 
   # ============================================================================
-  # CloudHound UI (Static Web Interface)
+  # ArgusCloud UI (Static Web Interface)
   # ============================================================================
   ui:
-    image: cloudhound-ui:${CLOUDHOUND_VERSION:-latest}
+    image: arguscloud-ui:${ARGUSCLOUD_VERSION:-latest}
     build:
       context: ./ui
       dockerfile: Dockerfile
-    container_name: cloudhound-ui
+    container_name: arguscloud-ui
     restart: unless-stopped
     ports:
       - "8080:80"
@@ -160,7 +160,7 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - cloudhound-external
+      - arguscloud-external
     logging:
       driver: "json-file"
       options:
@@ -183,9 +183,9 @@ volumes:
 # ==============================================================================
 networks:
   # Internal network - API to Neo4j communication only
-  cloudhound-internal:
+  arguscloud-internal:
     driver: bridge
     internal: true
   # External network - UI and API exposed to users
-  cloudhound-external:
+  arguscloud-external:
     driver: bridge

@@ -1,4 +1,4 @@
-# CloudHound
+# ArgusCloud
 
 BloodHound-style graph analytics for multi-cloud environments. Collect, normalize, and visualize cloud resources, trust relationships, and attack paths.
 
@@ -46,8 +46,8 @@ Configure API connection, graph layout algorithm, and appearance options.
 
 ```bash
 # Clone the repository
-git clone https://github.com/jeremylaratro/cloudhound.git
-cd cloudhound
+git clone https://github.com/jeremylaratro/arguscloud.git
+cd arguscloud
 
 # Install with pip
 pip install -e .
@@ -70,62 +70,62 @@ docker run -d --name neo4j \
 
 ```bash
 # Using default AWS profile
-cloudhound collect --provider aws --output ./output
+arguscloud collect --provider aws --output ./output
 
 # Using specific profile and region
-cloudhound collect --provider aws --profile myprofile --region us-east-1 --output ./output
+arguscloud collect --provider aws --profile myprofile --region us-east-1 --output ./output
 
 # Collect specific services only
-cloudhound collect --provider aws --services iam s3 ec2 lambda
+arguscloud collect --provider aws --services iam s3 ec2 lambda
 ```
 
 ### Normalize Data
 
 ```bash
 # Generate nodes and edges from collected data
-cloudhound normalize --input ./output
+arguscloud normalize --input ./output
 ```
 
 ### Analyze for Attack Paths
 
 ```bash
 # Run security rules
-cloudhound analyze --input ./output
+arguscloud analyze --input ./output
 
 # Filter by severity
-cloudhound analyze --input ./output --severity high
+arguscloud analyze --input ./output --severity high
 ```
 
 ### Export Reports
 
 ```bash
 # Export to JSON
-cloudhound export --input ./output --format json --output report.json
+arguscloud export --input ./output --format json --output report.json
 
 # Export to SARIF (for GitHub/Azure DevOps)
-cloudhound export --input ./output --format sarif --output findings.sarif
+arguscloud export --input ./output --format sarif --output findings.sarif
 
 # Export to standalone HTML report
-cloudhound export --input ./output --format html --output report.html
+arguscloud export --input ./output --format html --output report.html
 ```
 
 ### Import to Neo4j
 
 ```bash
-cloudhound import --input ./output --neo4j-uri bolt://localhost:7687 --neo4j-user neo4j --neo4j-password letmein123
+arguscloud import --input ./output --neo4j-uri bolt://localhost:7687 --neo4j-user neo4j --neo4j-password letmein123
 ```
 
 ### Start the API Server
 
 ```bash
 # Start with authentication enabled
-cloudhound serve --port 5000
+arguscloud serve --port 5000
 
 # Start without authentication (development only)
-cloudhound serve --port 5000 --no-auth
+arguscloud serve --port 5000 --no-auth
 
 # Generate an API key
-cloudhound keygen
+arguscloud keygen
 ```
 
 ### Start the UI
@@ -154,7 +154,7 @@ Open http://localhost:8001 in your browser.
 
 ## Attack Path Rules
 
-CloudHound automatically detects potential attack paths including:
+ArgusCloud automatically detects potential attack paths including:
 
 - **Privilege Escalation**: Users/roles that can escalate to admin
 - **Cross-Account Access**: Trust relationships allowing lateral movement
@@ -164,7 +164,7 @@ CloudHound automatically detects potential attack paths including:
 ## Architecture
 
 ```
-cloudhound/
+arguscloud/
 ├── core/
 │   ├── graph.py       # Core data structures (Node, Edge, AttackPath)
 │   ├── registry.py    # Plugin registries for collectors/normalizers/rules

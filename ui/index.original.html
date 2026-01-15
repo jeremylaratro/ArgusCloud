@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  CloudHound UI - Cloud Security Graph Visualization
+  ArgusCloud UI - Cloud Security Graph Visualization
 
   PLANNED FEATURES (TODO):
 
@@ -37,7 +37,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CloudHound - AWS Security Graph Analytics</title>
+  <title>ArgusCloud - AWS Security Graph Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -2480,7 +2480,7 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <p class="upload-text">Upload CloudHound data files to visualize</p>
+              <p class="upload-text">Upload ArgusCloud data files to visualize</p>
 
               <!-- Import method tabs -->
               <div class="import-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
@@ -3549,7 +3549,7 @@
       mitreTactics: []
     };
 
-    let savedFilters = JSON.parse(localStorage.getItem('cloudhound_saved_filters') || '[]');
+    let savedFilters = JSON.parse(localStorage.getItem('arguscloud_saved_filters') || '[]');
     let availableTypes = [];
     let availableRegions = [];
     let availableEdgeTypes = [];
@@ -5638,7 +5638,7 @@
       };
 
       savedFilters.push(filter);
-      localStorage.setItem('cloudhound_saved_filters', JSON.stringify(savedFilters));
+      localStorage.setItem('arguscloud_saved_filters', JSON.stringify(savedFilters));
       renderSavedFilters();
       showMessage(`Filter "${name}" saved`, 'success');
     }
@@ -5683,7 +5683,7 @@
           e.stopPropagation();
           const id = btn.dataset.id;
           savedFilters = savedFilters.filter(f => f.id !== id);
-          localStorage.setItem('cloudhound_saved_filters', JSON.stringify(savedFilters));
+          localStorage.setItem('arguscloud_saved_filters', JSON.stringify(savedFilters));
           renderSavedFilters();
         });
       });
@@ -5880,7 +5880,7 @@
         nodes = [];
         edges = [];
         currentProfile = null;
-        localStorage.removeItem('cloudhound_last_profile');
+        localStorage.removeItem('arguscloud_last_profile');
         if (cy) {
           cy.destroy();
           cy = null;
@@ -5903,7 +5903,7 @@
         currentProfile = name;
 
         // Save as last used profile
-        localStorage.setItem('cloudhound_last_profile', name);
+        localStorage.setItem('arguscloud_last_profile', name);
 
         // Update available filter options from loaded data
         updateAvailableFilterOptions();
@@ -5968,7 +5968,7 @@
         }
 
         currentProfile = name;
-        localStorage.setItem('cloudhound_last_profile', name);
+        localStorage.setItem('arguscloud_last_profile', name);
         await loadProfiles();
         document.getElementById('profileSelect').value = name;
 
@@ -5994,7 +5994,7 @@
 
         if (currentProfile === name) {
           currentProfile = null;
-          localStorage.removeItem('cloudhound_last_profile');
+          localStorage.removeItem('arguscloud_last_profile');
         }
 
         await loadProfiles();
@@ -7586,7 +7586,7 @@
         // Update current profile reference
         if (currentProfile === oldName) {
           currentProfile = newName;
-          localStorage.setItem('cloudhound_last_profile', newName);
+          localStorage.setItem('arguscloud_last_profile', newName);
         }
 
         // Reload profiles and update selection
@@ -8333,7 +8333,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `cloudhound-report-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `arguscloud-report-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
     });
@@ -8441,7 +8441,7 @@
       let startWidth = 0;
 
       // Load saved width from localStorage
-      const savedWidth = localStorage.getItem('cloudhound_sidebar_width');
+      const savedWidth = localStorage.getItem('arguscloud_sidebar_width');
       if (savedWidth) {
         const width = parseInt(savedWidth, 10);
         if (width >= 260 && width <= 600) {
@@ -8484,7 +8484,7 @@
           resizeHandle.classList.remove('dragging');
 
           // Save width to localStorage
-          localStorage.setItem('cloudhound_sidebar_width', sidebar.offsetWidth.toString());
+          localStorage.setItem('arguscloud_sidebar_width', sidebar.offsetWidth.toString());
         }
       });
 
@@ -8492,7 +8492,7 @@
       resizeHandle.addEventListener('dblclick', () => {
         sidebar.style.width = '280px';
         layout.style.gridTemplateColumns = '280px 1fr';
-        localStorage.removeItem('cloudhound_sidebar_width');
+        localStorage.removeItem('arguscloud_sidebar_width');
         if (cy) cy.resize();
       });
     }
@@ -8523,7 +8523,7 @@
       await loadProfiles();
 
       // Auto-load last used profile
-      const lastProfile = localStorage.getItem('cloudhound_last_profile');
+      const lastProfile = localStorage.getItem('arguscloud_last_profile');
       if (lastProfile && profiles.some(p => p.name === lastProfile)) {
         document.getElementById('profileSelect').value = lastProfile;
         await loadProfile(lastProfile);

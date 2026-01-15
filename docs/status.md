@@ -1,11 +1,11 @@
-# CloudHound Current Status
+# ArgusCloud Current Status
 
 **Version:** 0.3.0
 **Last Updated:** 2025-12-31
 
 ## Project Overview
 
-CloudHound is a multi-cloud security graph analytics tool that collects cloud resource data, normalizes it into a graph structure, and analyzes attack paths and security findings.
+ArgusCloud is a multi-cloud security graph analytics tool that collects cloud resource data, normalizes it into a graph structure, and analyzes attack paths and security findings.
 
 ## Architecture Summary
 
@@ -127,7 +127,7 @@ Test categories:
 ## File Structure
 
 ```
-cloudhound/
+arguscloud/
 ├── api/
 │   ├── server.py      # Main API server
 │   ├── auth.py        # Authentication

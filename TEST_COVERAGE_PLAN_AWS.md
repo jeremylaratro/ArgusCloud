@@ -1,4 +1,4 @@
-# CloudHound Test Coverage Plan - AWS Dependent Tests
+# ArgusCloud Test Coverage Plan - AWS Dependent Tests
 
 **IMPORTANT:** These tests require AWS credentials or extensive mocking with `moto` library.
 Wait to implement these until the non-AWS tests are complete.
@@ -17,7 +17,7 @@ pip install moto[all]>=4.0.0
 
 ### A.1 IAM Collector Tests
 **File:** `tests/test_collectors_iam.py`
-**Source:** `cloudhound/collectors/aws/iam.py`
+**Source:** `arguscloud/collectors/aws/iam.py`
 
 Tests needed (using moto):
 - [ ] iam-summary collector
@@ -61,7 +61,7 @@ def test_iam_roles_collector():
     )
 
     # Run collector
-    from cloudhound.collectors.aws.iam import collect_iam_roles
+    from arguscloud.collectors.aws.iam import collect_iam_roles
     result = collect_iam_roles(session=boto3.Session())
 
     # Assert
@@ -75,7 +75,7 @@ def test_iam_roles_collector():
 
 ### B.1 S3 Collector Tests
 **File:** `tests/test_collectors_s3.py`
-**Source:** `cloudhound/collectors/aws/storage.py`
+**Source:** `arguscloud/collectors/aws/storage.py`
 
 Tests needed (using moto):
 - [ ] s3 collector
@@ -90,7 +90,7 @@ Tests needed (using moto):
 
 ### B.2 KMS Collector Tests
 **File:** `tests/test_collectors_kms.py`
-**Source:** `cloudhound/collectors/aws/storage.py`
+**Source:** `arguscloud/collectors/aws/storage.py`
 
 Tests needed (using moto):
 - [ ] kms collector
@@ -106,7 +106,7 @@ Tests needed (using moto):
 
 ### C.1 EC2 Collector Tests
 **File:** `tests/test_collectors_ec2.py`
-**Source:** `cloudhound/collectors/aws/ec2.py`
+**Source:** `arguscloud/collectors/aws/ec2.py`
 
 Tests needed (using moto):
 - [ ] ec2 collector
@@ -125,7 +125,7 @@ Tests needed (using moto):
 
 ### C.2 VPC Collector Tests
 **File:** `tests/test_collectors_vpc.py`
-**Source:** `cloudhound/collectors/aws/ec2.py`
+**Source:** `arguscloud/collectors/aws/ec2.py`
 
 Tests needed (using moto):
 - [ ] vpc collector
@@ -146,7 +146,7 @@ Tests needed (using moto):
 
 ### D.1 Lambda Collector Tests
 **File:** `tests/test_collectors_lambda.py`
-**Source:** `cloudhound/collectors/aws/compute.py`
+**Source:** `arguscloud/collectors/aws/compute.py`
 
 Tests needed (using moto):
 - [ ] lambda collector
@@ -160,7 +160,7 @@ Tests needed (using moto):
 
 ### D.2 EKS Collector Tests
 **File:** `tests/test_collectors_eks.py`
-**Source:** `cloudhound/collectors/aws/compute.py`
+**Source:** `arguscloud/collectors/aws/compute.py`
 
 Tests needed (using moto):
 - [ ] eks collector
@@ -172,7 +172,7 @@ Tests needed (using moto):
 
 ### D.3 ECR Collector Tests
 **File:** `tests/test_collectors_ecr.py`
-**Source:** `cloudhound/collectors/aws/compute.py`
+**Source:** `arguscloud/collectors/aws/compute.py`
 
 Tests needed (using moto):
 - [ ] ecr collector
@@ -183,7 +183,7 @@ Tests needed (using moto):
 
 ### D.4 CodeBuild Collector Tests
 **File:** `tests/test_collectors_codebuild.py`
-**Source:** `cloudhound/collectors/aws/compute.py`
+**Source:** `arguscloud/collectors/aws/compute.py`
 
 Tests needed (using moto):
 - [ ] codebuild collector
@@ -198,7 +198,7 @@ Tests needed (using moto):
 
 ### E.1 CloudTrail Collector Tests
 **File:** `tests/test_collectors_cloudtrail.py`
-**Source:** `cloudhound/collectors/aws/security.py`
+**Source:** `arguscloud/collectors/aws/security.py`
 
 Tests needed (using moto):
 - [ ] cloudtrail collector
@@ -211,7 +211,7 @@ Tests needed (using moto):
 
 ### E.2 GuardDuty Collector Tests
 **File:** `tests/test_collectors_guardduty.py`
-**Source:** `cloudhound/collectors/aws/security.py`
+**Source:** `arguscloud/collectors/aws/security.py`
 
 Tests needed (using moto):
 - [ ] guardduty collector
@@ -222,7 +222,7 @@ Tests needed (using moto):
 
 ### E.3 Config Collector Tests
 **File:** `tests/test_collectors_config.py`
-**Source:** `cloudhound/collectors/aws/security.py`
+**Source:** `arguscloud/collectors/aws/security.py`
 
 Tests needed (using moto):
 - [ ] config collector
@@ -233,7 +233,7 @@ Tests needed (using moto):
 
 ### E.4 Security Hub Collector Tests
 **File:** `tests/test_collectors_securityhub.py`
-**Source:** `cloudhound/collectors/aws/security.py`
+**Source:** `arguscloud/collectors/aws/security.py`
 
 Tests needed:
 - [ ] securityhub collector
@@ -248,7 +248,7 @@ Tests needed:
 
 ### F.1 RDS Collector Tests
 **File:** `tests/test_collectors_rds.py`
-**Source:** `cloudhound/collectors/aws/storage.py`
+**Source:** `arguscloud/collectors/aws/storage.py`
 
 Tests needed (using moto):
 - [ ] rds collector
@@ -262,7 +262,7 @@ Tests needed (using moto):
 
 ### F.2 Secrets Manager Collector Tests
 **File:** `tests/test_collectors_secrets.py`
-**Source:** `cloudhound/collectors/aws/identity.py`
+**Source:** `arguscloud/collectors/aws/identity.py`
 
 Tests needed (using moto):
 - [ ] secretsmanager collector
@@ -273,7 +273,7 @@ Tests needed (using moto):
 
 ### F.3 SNS/SQS Collector Tests
 **File:** `tests/test_collectors_messaging.py`
-**Source:** `cloudhound/collectors/aws/messaging.py`
+**Source:** `arguscloud/collectors/aws/messaging.py`
 
 Tests needed (using moto):
 - [ ] sns collector
@@ -291,7 +291,7 @@ Tests needed (using moto):
 
 ### G.1 Organizations Collector Tests
 **File:** `tests/test_collectors_org.py`
-**Source:** `cloudhound/collectors/aws/org.py`
+**Source:** `arguscloud/collectors/aws/org.py`
 
 Tests needed (using moto):
 - [ ] org collector
@@ -303,7 +303,7 @@ Tests needed (using moto):
 
 ### G.2 STS Collector Tests
 **File:** `tests/test_collectors_sts.py`
-**Source:** `cloudhound/collectors/aws/sts.py`
+**Source:** `arguscloud/collectors/aws/sts.py`
 
 Tests needed (using moto):
 - [ ] sts collector

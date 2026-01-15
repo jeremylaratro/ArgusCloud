@@ -1,4 +1,4 @@
-# CloudHound Development Roadmap
+# ArgusCloud Development Roadmap
 
 **Version:** 0.3.0
 **Last Updated:** 2025-12-31

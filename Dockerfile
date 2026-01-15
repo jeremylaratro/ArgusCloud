@@ -1,5 +1,5 @@
-# CloudHound API Dockerfile
-# Multi-stage production build for the CloudHound API server
+# ArgusCloud API Dockerfile
+# Multi-stage production build for the ArgusCloud API server
 
 # =============================================================================
 # Stage 1: Builder - Install dependencies and build the package
@@ -45,10 +45,10 @@ RUN pip install --no-deps .
 FROM python:3.11-slim AS runtime
 
 # Labels for container metadata
-LABEL org.opencontainers.image.title="CloudHound API" \
+LABEL org.opencontainers.image.title="ArgusCloud API" \
       org.opencontainers.image.description="Cloud security graph analytics API server" \
       org.opencontainers.image.version="0.3.0" \
-      org.opencontainers.image.vendor="CloudHound" \
+      org.opencontainers.image.vendor="ArgusCloud" \
       org.opencontainers.image.source="https://github.com/jeremylaratro/cloudhound"
 
 # Runtime environment variables
@@ -56,9 +56,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
     # Application defaults
-    CLOUDHOUND_API_HOST=0.0.0.0 \
-    CLOUDHOUND_API_PORT=9847 \
-    CLOUDHOUND_LOG_LEVEL=INFO \
+    ARGUSCLOUD_API_HOST=0.0.0.0 \
+    ARGUSCLOUD_API_PORT=9847 \
+    ARGUSCLOUD_LOG_LEVEL=INFO \
     # Virtual environment path
     PATH="/opt/venv/bin:$PATH"
 
@@ -72,22 +72,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean
 
 # Create non-root user for security
-RUN groupadd --gid 1000 cloudhound && \
-    useradd --uid 1000 --gid cloudhound --shell /bin/bash --create-home cloudhound
+RUN groupadd --gid 1000 arguscloud && \
+    useradd --uid 1000 --gid arguscloud --shell /bin/bash --create-home arguscloud
 
 # Copy virtual environment from builder
 COPY --from=builder /opt/venv /opt/venv
 
 # Copy application code (needed for some dynamic imports)
-COPY --chown=cloudhound:cloudhound cloudhound/ ./cloudhound/
-COPY --chown=cloudhound:cloudhound awshound/ ./awshound/
-COPY --chown=cloudhound:cloudhound cloudhound.py ./
+COPY --chown=arguscloud:arguscloud cloudhound/ ./cloudhound/
+COPY --chown=arguscloud:arguscloud awshound/ ./awshound/
+COPY --chown=arguscloud:arguscloud cloudhound.py ./
 
 # Create data directory for uploads/exports
-RUN mkdir -p /app/data && chown cloudhound:cloudhound /app/data
+RUN mkdir -p /app/data && chown arguscloud:arguscloud /app/data
 
 # Switch to non-root user
-USER cloudhound
+USER arguscloud
 
 # Expose API port
 EXPOSE 9847

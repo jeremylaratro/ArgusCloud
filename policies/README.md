@@ -1,4 +1,4 @@
-# CloudHound IAM Policies
+# ArgusCloud IAM Policies
 
 AWS inline policies have a 2048 character limit, so permissions are split into 4 policies.
 
@@ -6,10 +6,10 @@ AWS inline policies have a 2048 character limit, so permissions are split into 4
 
 | Policy | Purpose |
 |--------|---------|
-| `cloudhound-collect-iam.json` | IAM, Organizations, SSO collection |
-| `cloudhound-collect-compute.json` | EC2, S3, Lambda, EKS, ECR, RDS collection |
-| `cloudhound-collect-security.json` | Security services, KMS, logging collection |
-| `cloudhound-provision.json` | Create test resources (optional) |
+| `arguscloud-collect-iam.json` | IAM, Organizations, SSO collection |
+| `arguscloud-collect-compute.json` | EC2, S3, Lambda, EKS, ECR, RDS collection |
+| `arguscloud-collect-security.json` | Security services, KMS, logging collection |
+| `arguscloud-provision.json` | Create test resources (optional) |
 
 ## Quick Setup
 
@@ -17,38 +17,38 @@ AWS inline policies have a 2048 character limit, so permissions are split into 4
 
 ```bash
 # Create user
-aws iam create-user --user-name cloudhound
+aws iam create-user --user-name arguscloud
 
 # Attach all 4 policies
-for policy in cloudhound-collect-iam cloudhound-collect-compute cloudhound-collect-security cloudhound-provision; do
+for policy in arguscloud-collect-iam arguscloud-collect-compute arguscloud-collect-security arguscloud-provision; do
   aws iam put-user-policy \
-    --user-name cloudhound \
+    --user-name arguscloud \
     --policy-name $policy \
     --policy-document file://policies/${policy}.json
 done
 
 # Create access key
-aws iam create-access-key --user-name cloudhound
+aws iam create-access-key --user-name arguscloud
 
 # Configure CLI
-aws configure --profile cloudhound
+aws configure --profile arguscloud
 ```
 
 ### Option 2: Collection Only (Read-Only)
 
-Skip `cloudhound-provision.json` if you don't need to create test resources:
+Skip `arguscloud-provision.json` if you don't need to create test resources:
 
 ```bash
-aws iam create-user --user-name cloudhound-readonly
+aws iam create-user --user-name arguscloud-readonly
 
-for policy in cloudhound-collect-iam cloudhound-collect-compute cloudhound-collect-security; do
+for policy in arguscloud-collect-iam arguscloud-collect-compute arguscloud-collect-security; do
   aws iam put-user-policy \
-    --user-name cloudhound-readonly \
+    --user-name arguscloud-readonly \
     --policy-name $policy \
     --policy-document file://policies/${policy}.json
 done
 
-aws iam create-access-key --user-name cloudhound-readonly
+aws iam create-access-key --user-name arguscloud-readonly
 ```
 
 ### Option 3: Use AWS Managed Policy
@@ -56,11 +56,11 @@ aws iam create-access-key --user-name cloudhound-readonly
 For collection only, you can use the AWS managed `ReadOnlyAccess` policy instead:
 
 ```bash
-aws iam create-user --user-name cloudhound
+aws iam create-user --user-name arguscloud
 aws iam attach-user-policy \
-  --user-name cloudhound \
+  --user-name arguscloud \
   --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess
-aws iam create-access-key --user-name cloudhound
+aws iam create-access-key --user-name arguscloud
 ```
 
 Note: `ReadOnlyAccess` grants broader permissions than needed but is simpler to manage.
@@ -69,14 +69,14 @@ Note: `ReadOnlyAccess` grants broader permissions than needed but is simpler to 
 
 ```bash
 # Delete inline policies
-for policy in cloudhound-collect-iam cloudhound-collect-compute cloudhound-collect-security cloudhound-provision; do
-  aws iam delete-user-policy --user-name cloudhound --policy-name $policy 2>/dev/null
+for policy in arguscloud-collect-iam arguscloud-collect-compute arguscloud-collect-security arguscloud-provision; do
+  aws iam delete-user-policy --user-name arguscloud --policy-name $policy 2>/dev/null
 done
 
 # Delete access keys
-aws iam list-access-keys --user-name cloudhound --query 'AccessKeyMetadata[].AccessKeyId' --output text | \
-  xargs -n1 aws iam delete-access-key --user-name cloudhound --access-key-id
+aws iam list-access-keys --user-name arguscloud --query 'AccessKeyMetadata[].AccessKeyId' --output text | \
+  xargs -n1 aws iam delete-access-key --user-name arguscloud --access-key-id
 
 # Delete user
-aws iam delete-user --user-name cloudhound
+aws iam delete-user --user-name arguscloud
 ```

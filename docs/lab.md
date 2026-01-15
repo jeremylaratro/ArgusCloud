@@ -1,4 +1,4 @@
-# CloudHound Lab Scaffold
+# ArgusCloud Lab Scaffold
 
 Goal: reproducible lab mirroring training scenarios for integration testing of collectors and rules.
 
@@ -10,7 +10,7 @@ Planned setup:
 
 Execution:
 - Deploy via CloudFormation/Terraform with parametrized regions.
-- Emit fixtures by running `cloudhound collect` then `normalize` to create golden bundles for regression.
+- Emit fixtures by running `arguscloud collect` then `normalize` to create golden bundles for regression.
 
 Next steps:
 - Author infra templates and CI job to deploy/destroy lab on demand.

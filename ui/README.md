@@ -1,6 +1,6 @@
-# CloudHound UI
+# ArgusCloud UI
 
-CloudHound UI is a modern web interface for cloud security graph visualization and analysis. It provides interactive graph exploration, security finding analysis, and AWS data collection capabilities.
+ArgusCloud UI is a modern web interface for cloud security graph visualization and analysis. It provides interactive graph exploration, security finding analysis, and AWS data collection capabilities.
 
 ## Features
 
@@ -58,7 +58,7 @@ CloudHound UI is a modern web interface for cloud security graph visualization a
 
 ## Architecture
 
-The UI is a single-page application that communicates with the CloudHound API:
+The UI is a single-page application that communicates with the ArgusCloud API:
 
 ```
 ui/
@@ -75,7 +75,7 @@ ui/
 
 ## API Endpoints Used
 
-The UI communicates with these CloudHound API endpoints:
+The UI communicates with these ArgusCloud API endpoints:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -93,14 +93,14 @@ The UI communicates with these CloudHound API endpoints:
 ## Development
 
 ### Prerequisites
-- CloudHound API server running (default: http://localhost:5000)
+- ArgusCloud API server running (default: http://localhost:5000)
 - Neo4j database connection
 
 ### Running Locally
 
 1. Start the API server:
    ```bash
-   cloudhound serve --no-auth
+   arguscloud serve --no-auth
    ```
 
 2. Serve the UI (any static file server):

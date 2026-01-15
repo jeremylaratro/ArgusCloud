@@ -1,6 +1,6 @@
-# CloudHound Deployment Guide
+# ArgusCloud Deployment Guide
 
-This guide covers deploying CloudHound in various environments.
+This guide covers deploying ArgusCloud in various environments.
 
 ## Table of Contents
 
@@ -25,19 +25,19 @@ docker run -d --name neo4j \
   -e NEO4J_AUTH=neo4j/password \
   neo4j:5
 
-# Install CloudHound
-pip install cloudhound
+# Install ArgusCloud
+pip install arguscloud
 
 # Start the API server
-cloudhound serve --port 9847
+arguscloud serve --port 9847
 ```
 
 ### With Docker Compose
 
 ```bash
 # Clone repository
-git clone https://github.com/owner/cloudhound.git
-cd cloudhound
+git clone https://github.com/owner/arguscloud.git
+cd arguscloud
 
 # Start services
 docker-compose up -d
@@ -70,9 +70,9 @@ services:
     ports:
       - "9847:9847"
     environment:
-      CLOUDHOUND_NEO4J_URI: bolt://neo4j:7687
-      CLOUDHOUND_NEO4J_USER: neo4j
-      CLOUDHOUND_NEO4J_PASSWORD: password
+      ARGUSCLOUD_NEO4J_URI: bolt://neo4j:7687
+      ARGUSCLOUD_NEO4J_USER: neo4j
+      ARGUSCLOUD_NEO4J_PASSWORD: password
     depends_on:
       - neo4j
 
@@ -106,8 +106,8 @@ Key differences:
 
 ### Security Checklist
 
-- [ ] Enable authentication (`CLOUDHOUND_AUTH_ENABLED=true`)
-- [ ] Set strong JWT secret (`CLOUDHOUND_JWT_SECRET`)
+- [ ] Enable authentication (`ARGUSCLOUD_AUTH_ENABLED=true`)
+- [ ] Set strong JWT secret (`ARGUSCLOUD_JWT_SECRET`)
 - [ ] Configure specific CORS origins
 - [ ] Use HTTPS (via reverse proxy)
 - [ ] Secure Neo4j with authentication
@@ -126,7 +126,7 @@ Key differences:
            │               │               │
            ▼               ▼               ▼
     ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-    │ CloudHound  │ │ CloudHound  │ │     UI      │
+    │ ArgusCloud  │ │ ArgusCloud  │ │     UI      │
     │   API #1    │ │   API #2    │ │   (static)  │
     └──────┬──────┘ └──────┬──────┘ └─────────────┘
            │               │
@@ -144,34 +144,34 @@ Key differences:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `CLOUDHOUND_NEO4J_URI` | Neo4j connection URI | `bolt://neo4j:7687` |
-| `CLOUDHOUND_NEO4J_USER` | Neo4j username | `neo4j` |
-| `CLOUDHOUND_NEO4J_PASSWORD` | Neo4j password | `secretpassword` |
+| `ARGUSCLOUD_NEO4J_URI` | Neo4j connection URI | `bolt://neo4j:7687` |
+| `ARGUSCLOUD_NEO4J_USER` | Neo4j username | `neo4j` |
+| `ARGUSCLOUD_NEO4J_PASSWORD` | Neo4j password | `secretpassword` |
 
 ### Optional
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `CLOUDHOUND_API_HOST` | API bind address | `0.0.0.0` |
-| `CLOUDHOUND_API_PORT` | API port | `9847` |
-| `CLOUDHOUND_AUTH_ENABLED` | Enable authentication | `true` |
-| `CLOUDHOUND_JWT_SECRET` | JWT signing secret | (auto-generated) |
-| `CLOUDHOUND_JWT_EXPIRY` | JWT expiry in seconds | `3600` |
-| `CLOUDHOUND_CORS_ORIGINS` | Allowed CORS origins | `http://localhost:8080` |
-| `CLOUDHOUND_LOG_LEVEL` | Logging level | `INFO` |
-| `CLOUDHOUND_MAX_QUERY_LIMIT` | Max query results | `10000` |
+| `ARGUSCLOUD_API_HOST` | API bind address | `0.0.0.0` |
+| `ARGUSCLOUD_API_PORT` | API port | `9847` |
+| `ARGUSCLOUD_AUTH_ENABLED` | Enable authentication | `true` |
+| `ARGUSCLOUD_JWT_SECRET` | JWT signing secret | (auto-generated) |
+| `ARGUSCLOUD_JWT_EXPIRY` | JWT expiry in seconds | `3600` |
+| `ARGUSCLOUD_CORS_ORIGINS` | Allowed CORS origins | `http://localhost:8080` |
+| `ARGUSCLOUD_LOG_LEVEL` | Logging level | `INFO` |
+| `ARGUSCLOUD_MAX_QUERY_LIMIT` | Max query results | `10000` |
 
 ### API Keys
 
 Generate API keys for programmatic access:
 
 ```bash
-cloudhound auth generate-key --name "ci-pipeline"
+arguscloud auth generate-key --name "ci-pipeline"
 ```
 
 Configure via environment:
 ```bash
-CLOUDHOUND_API_KEYS="ci-pipeline:hash1,admin:hash2"
+ARGUSCLOUD_API_KEYS="ci-pipeline:hash1,admin:hash2"
 ```
 
 ## Reverse Proxy Setup
@@ -179,17 +179,17 @@ CLOUDHOUND_API_KEYS="ci-pipeline:hash1,admin:hash2"
 ### Nginx
 
 ```nginx
-upstream cloudhound_api {
+upstream arguscloud_api {
     server 127.0.0.1:9847;
     keepalive 32;
 }
 
 server {
     listen 443 ssl http2;
-    server_name cloudhound.example.com;
+    server_name arguscloud.example.com;
 
-    ssl_certificate /etc/ssl/certs/cloudhound.crt;
-    ssl_certificate_key /etc/ssl/private/cloudhound.key;
+    ssl_certificate /etc/ssl/certs/arguscloud.crt;
+    ssl_certificate_key /etc/ssl/private/arguscloud.key;
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -200,7 +200,7 @@ server {
     # API
     location /api/ {
         rewrite ^/api/(.*)$ /$1 break;
-        proxy_pass http://cloudhound_api;
+        proxy_pass http://arguscloud_api;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -214,7 +214,7 @@ server {
 
     # UI static files
     location / {
-        root /var/www/cloudhound/ui;
+        root /var/www/arguscloud/ui;
         try_files $uri $uri/ /index.html;
     }
 }
@@ -226,27 +226,27 @@ server {
 # traefik.yml
 http:
   routers:
-    cloudhound-api:
-      rule: "Host(`cloudhound.example.com`) && PathPrefix(`/api`)"
-      service: cloudhound-api
+    arguscloud-api:
+      rule: "Host(`arguscloud.example.com`) && PathPrefix(`/api`)"
+      service: arguscloud-api
       tls:
         certResolver: letsencrypt
       middlewares:
         - strip-api-prefix
 
-    cloudhound-ui:
-      rule: "Host(`cloudhound.example.com`)"
-      service: cloudhound-ui
+    arguscloud-ui:
+      rule: "Host(`arguscloud.example.com`)"
+      service: arguscloud-ui
       tls:
         certResolver: letsencrypt
 
   services:
-    cloudhound-api:
+    arguscloud-api:
       loadBalancer:
         servers:
           - url: "http://api:9847"
 
-    cloudhound-ui:
+    arguscloud-ui:
       loadBalancer:
         servers:
           - url: "http://ui:80"
@@ -267,7 +267,7 @@ http:
 sudo apt install certbot python3-certbot-nginx
 
 # Obtain certificate
-sudo certbot --nginx -d cloudhound.example.com
+sudo certbot --nginx -d arguscloud.example.com
 
 # Auto-renewal
 sudo certbot renew --dry-run
@@ -277,9 +277,9 @@ sudo certbot renew --dry-run
 
 ```bash
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /etc/ssl/private/cloudhound.key \
-  -out /etc/ssl/certs/cloudhound.crt \
-  -subj "/CN=cloudhound.local"
+  -keyout /etc/ssl/private/arguscloud.key \
+  -out /etc/ssl/certs/arguscloud.crt \
+  -subj "/CN=arguscloud.local"
 ```
 
 ## High Availability
@@ -322,7 +322,7 @@ Run multiple API instances behind a load balancer:
 ```yaml
 services:
   api:
-    image: cloudhound:latest
+    image: arguscloud:latest
     deploy:
       replicas: 3
       resources:
@@ -363,7 +363,7 @@ curl http://localhost:9847/metrics
 
 Configure log level:
 ```bash
-CLOUDHOUND_LOG_LEVEL=DEBUG cloudhound serve
+ARGUSCLOUD_LOG_LEVEL=DEBUG arguscloud serve
 ```
 
 Log format (JSON):
@@ -391,7 +391,7 @@ Error: Unable to connect to Neo4j at bolt://localhost:7687
 
 Solutions:
 1. Verify Neo4j is running: `docker ps | grep neo4j`
-2. Check connection string: `CLOUDHOUND_NEO4J_URI`
+2. Check connection string: `ARGUSCLOUD_NEO4J_URI`
 3. Verify credentials
 4. Check network connectivity
 
@@ -413,14 +413,14 @@ Error: CORS policy blocked request
 ```
 
 Solutions:
-1. Add origin to `CLOUDHOUND_CORS_ORIGINS`
+1. Add origin to `ARGUSCLOUD_CORS_ORIGINS`
 2. Verify origin matches exactly (including protocol)
 
 ### Debug Mode
 
 Enable debug logging:
 ```bash
-CLOUDHOUND_LOG_LEVEL=DEBUG cloudhound serve
+ARGUSCLOUD_LOG_LEVEL=DEBUG arguscloud serve
 ```
 
 ### Health Check Troubleshooting
@@ -433,7 +433,7 @@ curl -v http://localhost:9847/health
 cypher-shell -u neo4j -p password "RETURN 1"
 
 # Check container logs
-docker logs cloudhound-api
+docker logs arguscloud-api
 ```
 
 ---

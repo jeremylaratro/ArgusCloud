@@ -1,9 +1,9 @@
-# CloudHound UI with Neo4j API
+# ArgusCloud UI with Neo4j API
 
 ## Run Neo4j
 ```bash
 sudo docker run -d \
-  --name cloudhound-neo4j \
+  --name arguscloud-neo4j \
   -p 7474:7474 -p 7687:7687 \
   -e NEO4J_AUTH=neo4j/letmein123 \
   -v "$(pwd)/neo4j/data":/data \
