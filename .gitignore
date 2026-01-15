@@ -1,17 +1,64 @@
+# Dependencies
 node_modules/
-tests/
+package-lock.json
+package.json
+
+# Data directories
 neo4j/
+data/
+normalized/
+awshound-output/
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+
+# Test/Coverage
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
 .env
 *.log
 *.tmp
 *.bak
-*.swp
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Secrets
 .cred
 .neo4j_password
+
+# Runtime
 .pids/
 .logs/
+
+# Internal/Development directories
+enum/
+scripts/
+server/
+demo/
+policies/
+
+# Legacy scripts
+start-server.sh
+cloudhound.py

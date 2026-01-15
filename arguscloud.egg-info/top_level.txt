@@ -1,3 +1,0 @@
-arguscloud
-awshound
-awshound-output

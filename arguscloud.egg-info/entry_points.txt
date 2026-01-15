@@ -1,3 +1,0 @@
-[console_scripts]
-arguscloud = arguscloud.cli.main:main
-awshound = awshound.cli:main
