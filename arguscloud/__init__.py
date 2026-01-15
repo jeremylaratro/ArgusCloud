@@ -7,7 +7,7 @@ A modular, extensible framework for cloud security analysis that:
 - Exports findings to multiple formats (JSON, SARIF, HTML)
 """
 
-__version__ = "0.2.0"
+__version__ = "0.5.0"
 __author__ = "Jeremy Laratro"
 
 from arguscloud.core.graph import (
